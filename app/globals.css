@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --black: #0A0A0A;
+  --black2: #111111;
+  --black3: #1A1A1A;
+  --orange: #FF5C00;
+  --orange2: #FF7A2F;
+  --orange-dim: rgba(255,92,0,0.12);
+  --orange-glow: rgba(255,92,0,0.25);
+  --white: #F5F0EB;
+  --white2: #C8C0B8;
+  --white3: #7A7570;
+  --red: #FF2D2D;
+  --green: #00C853;
+  --border: rgba(255,92,0,0.15);
+  --border2: rgba(255,255,255,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes pulse-dot { 0%,100% { opacity:1;transform:scale(1); } 50% { opacity:0.4;transform:scale(0.7); } }
+@keyframes pulse-ring { 0%,100% { box-shadow:0 0 0 0 var(--orange-glow); } 50% { box-shadow:0 0 0 10px transparent; } }
+@keyframes fadeUp { from { opacity:0;transform:translateY(16px); } to { opacity:1;transform:translateY(0); } }
+
+.animate-ticker { animation: ticker 50s linear infinite; }
+.animate-pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+.animate-pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+.animate-fade-up { animation: fadeUp 0.5s ease both; }
+
+.conf-high { background:rgba(0,200,83,0.15);color:#00C853;border:1px solid rgba(0,200,83,0.3);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;display:inline-flex;align-items:center; }
+.conf-med { background:rgba(255,200,0,0.12);color:#FFC800;border:1px solid rgba(255,200,0,0.3);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;display:inline-flex;align-items:center; }
+.conf-low { background:rgba(255,45,45,0.12);color:#FF2D2D;border:1px solid rgba(255,45,45,0.3);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;display:inline-flex;align-items:center; }
+.status-live { color:#FF2D2D;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:5px; }
+.status-live::before { content:'';width:5px;height:5px;background:#FF2D2D;border-radius:50%;animation:pulse-dot 1s infinite; }
