@@ -1,40 +1,37 @@
 "use client";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
-const LINKS = ["Live","Nigeria","Africa","Sports","Business","Entertainment","Money","Tech","Opinion","World"];
+const LINKS = [
+  { l:"Live", slug:"/" },{ l:"Nigeria", slug:"/nigeria" },{ l:"Africa", slug:"/africa" },
+  { l:"Sports", slug:"/sports" },{ l:"Business", slug:"/economy" },
+  { l:"Entertainment", slug:"/entertainment" },{ l:"Money", slug:"/money" },
+  { l:"Tech", slug:"/tech" },{ l:"World", slug:"/world" },{ l:"Opinion", slug:"/opinion" },
+];
 
 export default function Navbar({ onLeak }: { onLeak: () => void }) {
-  const [time, setTime] = useState("");
-  const [active, setActive] = useState("Live");
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const tick = () => {
-      const d = new Date();
-      const h = String(d.getUTCHours() + 1).padStart(2,"0");
-      const m = String(d.getUTCMinutes()).padStart(2,"0");
-      const s = String(d.getUTCSeconds()).padStart(2,"0");
-      setTime(`${h}:${m}:${s} WAT`);
-    };
-    tick(); const id = setInterval(tick, 1000); return () => clearInterval(id);
+    const h = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", h);
+    return () => window.removeEventListener("scroll", h);
   }, []);
 
   return (
-    <nav className="top-nav">
-      <div className="top-nav-inner">
-        <div className="nrt-logo">NRT<span>.</span></div>
+    <nav className="top-nav" style={{ boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.12)" : "0 2px 10px rgba(0,0,0,0.06)" }}>
+      <div className="nav-inner">
+        <Link href="/" className="nrt-logo">NRT<span>.</span></Link>
         <div className="nav-divider" />
         <div className="nav-links">
-          {LINKS.map(l => (
-            <span key={l} className={`nav-link${active===l?" active":""}`} onClick={() => setActive(l)}>{l}</span>
+          {LINKS.map(({ l, slug }) => (
+            <a key={l} href={slug} className="nav-link">{l}</a>
           ))}
         </div>
         <div className="nav-right">
-          <div className="nav-search">
-            <span>🔍</span><span>Search NRT</span>
-          </div>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:"var(--gray-text)", display:"none" }}>{time}</span>
-          <button className="btn-leak" onClick={onLeak}>🔒 Submit Leak</button>
-          <button className="btn-live">Subscribe</button>
+          <button className="pill-btn">🔍 Search</button>
+          <button className="pill-btn" onClick={onLeak}>🔒 Submit Leak</button>
+          <button className="pill-btn-primary">Subscribe</button>
         </div>
       </div>
     </nav>
