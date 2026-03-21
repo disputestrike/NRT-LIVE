@@ -2,209 +2,422 @@
 import { useState } from "react";
 import Ticker from "./components/Ticker";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Scores from "./components/Scores";
 import StoryModal from "./components/StoryModal";
 import LeakModal from "./components/LeakModal";
-import { STORIES, Story } from "./data/stories";
+import { STORIES, Story, getCatColor } from "./data/stories";
 
-const catColor: Record<string,string> = {
-  Politics:"var(--orange)", Economy:"#FFC800", Sports:"#00C853",
-  Investigation:"#FF2D2D", Entertainment:"#A855F7", Default:"var(--orange)",
-  "Money / Hustle":"#38BDF8", "Sports · EPL":"#00C853"
+const getBg = (cls: string) => {
+  const m: Record<string,string> = {
+    "ph-pol":"linear-gradient(135deg,#1a1a2e,#16213e)",
+    "ph-eco":"linear-gradient(135deg,#0d2137,#1a3a5c)",
+    "ph-spo":"linear-gradient(135deg,#0d3320,#1a5c35)",
+    "ph-ent":"linear-gradient(135deg,#2d0d30,#5c1a60)",
+    "ph-inv":"linear-gradient(135deg,#2d0d0d,#5c1a1a)",
+    "ph-mon":"linear-gradient(135deg,#1a2d0d,#3a5c1a)",
+    "ph-tec":"linear-gradient(135deg,#0d1a2d,#1a355c)",
+    "ph-hlt":"linear-gradient(135deg,#2d0d1a,#5c1a35)",
+  };
+  return m[cls] || "#1a1a1a";
 };
-const getColor = (cat: string) => {
-  for (const k of Object.keys(catColor)) if (cat.includes(k)) return catColor[k];
-  return catColor.Default;
-};
 
-const SectionHeader = ({ title, onMore }: { title: string; onMore?: () => void }) => (
-  <div style={{ display:"flex", alignItems:"center", gap:16, padding:"32px 0 16px", borderBottom:"1px solid var(--border)", marginBottom:24 }}>
-    <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:28, letterSpacing:3, color:"var(--white)" }}>{title}</div>
-    <div style={{ flex:1, height:1, background:"var(--border)" }} />
-    <span onClick={onMore} style={{ fontSize:11, fontWeight:600, letterSpacing:"1.5px", textTransform:"uppercase", color:"var(--orange)", cursor:"pointer" }}>All →</span>
-  </div>
-);
-
-const MARKET = [
-  { label:"USD/NGN", val:"₦1,420", chg:"▼ 0.8%", up:false },
-  { label:"Bitcoin", val:"$84,210", chg:"▲ 2.1%", up:true },
-  { label:"DANGCEM", val:"₦1,042", chg:"▲ 4.9%", up:true },
-  { label:"MTNN", val:"₦215.4", chg:"▼ 1.2%", up:false },
-  { label:"Crude", val:"$74.40", chg:"▲ 0.6%", up:true },
+const SCORES = [
+  { league:"🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League", home:"Man City", away:"Arsenal", hs:2, as:1, status:"FT", live:false },
+  { league:"🇳🇬 Super Eagles", home:"Nigeria", away:"Ghana", hs:2, as:0, status:"67'", live:true },
+  { league:"🇮🇹 Serie A", home:"Napoli", away:"Juventus", hs:4, as:1, status:"FT", live:false },
+  { league:"🏆 UCL", home:"Real Madrid", away:"PSG", hs:3, as:1, status:"82'", live:true },
+  { league:"🇫🇷 Ligue 1", home:"Monaco", away:"Marseille", hs:2, as:2, status:"90+2'", live:true },
+  { league:"🇩🇪 Bundesliga", home:"Bayern", away:"Dortmund", hs:5, as:2, status:"FT", live:false },
+  { league:"🏀 NBA", home:"Lakers", away:"Celtics", hs:114, as:108, status:"FT", live:false },
+  { league:"🌍 CAF", home:"Al Ahly", away:"Esperance", hs:1, as:1, status:"FT·AET", live:false },
 ];
-const TRENDS = ["#MediaBill","#SuperEagles","#Naira","#Osimhen","#EFCC","#DavidoTour"];
+const MARKET = [
+  { l:"USD/NGN", v:"₦1,420", c:"▼ 0.8%", up:false },
+  { l:"Bitcoin", v:"$84,210", c:"▲ 2.1%", up:true },
+  { l:"DANGCEM", v:"₦1,042", c:"▲ 4.9%", up:true },
+  { l:"MTNN", v:"₦215.4", c:"▼ 1.2%", up:false },
+  { l:"Crude Oil", v:"$74.40", c:"▲ 0.6%", up:true },
+  { l:"Gold", v:"$2,341", c:"▲ 0.3%", up:true },
+];
+const TRENDS = [
+  { t:"#MediaBill", n:"48.2K" }, { t:"#SuperEagles", n:"31.7K" },
+  { t:"#Naira", n:"27.4K" }, { t:"#Osimhen", n:"22.1K" },
+  { t:"#EFCC", n:"18.9K" }, { t:"#DavidoTour", n:"15.3K" },
+];
+const VIDEOS = [
+  { emoji:"🎙", title:"NRT AI Anchor: 3PM Bulletin — Top 8 Stories", dur:"4:12", ph:"ph-pol" },
+  { emoji:"⚽", title:"Super Eagles Training Camp: Osimhen Drills Ahead of Qualifiers", dur:"2:47", ph:"ph-spo" },
+  { emoji:"💰", title:"Naira Crisis Explained: What the CBN Decision Means for You", dur:"3:31", ph:"ph-eco" },
+  { emoji:"🎵", title:"Davido Announces Africa Tour — Exclusive Interview", dur:"5:20", ph:"ph-ent" },
+];
+
+function SectionHeader({ title, color = "var(--black)" }: { title: string; color?: string }) {
+  return (
+    <div className="sec-hdr">
+      <span className="sec-hdr-title" style={{ borderBottom:`3px solid ${color}` }}>{title}</span>
+      <div className="sec-hdr-line" />
+      <span className="sec-hdr-more">See All →</span>
+    </div>
+  );
+}
+
+function NewsCard({ s, onStory, size = "normal" }: { s: Story; onStory: (s: Story) => void; size?: string }) {
+  return (
+    <div className="news-card" onClick={() => onStory(s)}>
+      <div style={{ background: getBg(s.phClass), aspectRatio:"16/9", display:"flex", alignItems:"center", justifyContent:"center", fontSize: size === "large" ? 44 : 30, borderRadius:"2px 2px 0 0" }}>
+        {s.emoji}
+      </div>
+      <div className="nc-body">
+        <div className="nc-cat" style={{ color: getCatColor(s.category) }}>{s.category}</div>
+        <div className={`nc-hl${size === "large" ? " large" : ""}`}>{s.headline}</div>
+        <div className="nc-snippet">{s.snippet}</div>
+        <div className="nc-meta">
+          <span>{s.time}</span>
+          <span className={s.confidence === "Verified" ? "tag-verified" : "tag-developing"}>
+            {s.confidence === "Verified" ? "✓ Verified" : "⚠ Developing"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ListCard({ s, onStory }: { s: Story; onStory: (s: Story) => void }) {
+  return (
+    <div className="list-card" onClick={() => onStory(s)}>
+      <div style={{ background: getBg(s.phClass), width:80, height:60, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, borderRadius:2, flexShrink:0 }}>
+        {s.emoji}
+      </div>
+      <div className="lc-body">
+        <div className="lc-cat" style={{ color: getCatColor(s.category) }}>{s.category}</div>
+        <div className="lc-hl">{s.headline}</div>
+        <div className="lc-meta">{s.time}</div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [story, setStory] = useState<Story | null>(null);
   const [leak, setLeak] = useState(false);
 
   return (
-    <div style={{ minHeight:"100vh" }}>
+    <div style={{ background:"white", minHeight:"100vh" }}>
       <Ticker />
       <Navbar onLeak={() => setLeak(true)} />
 
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 24px" }}>
-        <Hero stories={STORIES.slice(0,5)} onStory={setStory} />
+      {/* Breaking Bar */}
+      <div className="breaking-bar">
+        <span className="bb-label">Breaking</span>
+        <span className="bb-text">Senate passes Digital Media Regulation Act — critics call it attack on press freedom · CBN holds emergency meeting as naira hits ₦1,420</span>
+      </div>
 
-        {/* AI Bulletin */}
-        <div style={{
-          background:"linear-gradient(135deg,#1a0800,#0f0f0f)",
-          border:"1px solid var(--orange)", borderLeft:"4px solid var(--orange)",
-          padding:"16px 24px", margin:"24px 0", display:"flex",
-          alignItems:"center", gap:20, cursor:"pointer"
-        }}>
-          <div className="animate-pulse-ring" style={{ width:40, height:40, background:"var(--orange)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>🎙</div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:10, fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--orange)", marginBottom:4 }}>🔴 Live AI Broadcast · Top of the Hour</div>
-            <div style={{ fontSize:14, fontWeight:600, color:"var(--white)" }}>NRT AI Anchor: Your 3PM news bulletin — 8 stories, 4 minutes</div>
-          </div>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.5px", textTransform:"uppercase", color:"var(--orange)", border:"1px solid var(--orange)", padding:"8px 16px", borderRadius:2, whiteSpace:"nowrap" }}>▶ Play Now</div>
-        </div>
-
-        {/* Live Feed */}
-        <SectionHeader title="Live Feed" />
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:1, background:"var(--border)", border:"1px solid var(--border)", marginBottom:40 }}>
-          {STORIES.slice(5,9).map((s, i) => (
-            <div key={s.id} onClick={() => setStory(s)} style={{
-              background:"var(--black2)", padding:24, cursor:"pointer",
-              gridColumn: i === 0 ? "span 2" : undefined, transition:"background 0.2s"
-            }} className="hover:bg-[#141414] transition-colors">
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:2, textTransform:"uppercase", color: getColor(s.category), marginBottom:10 }}>{s.category}</div>
-              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: i === 0 ? 22 : 18, lineHeight:1.15, color:"var(--white)", marginBottom:10, letterSpacing:"0.5px" }}>{s.headline}</div>
-              <div style={{ fontSize:13, color:"var(--white2)", lineHeight:1.6, marginBottom:14, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical" }}>{s.snippet}</div>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:"var(--white3)" }}>{s.time}</span>
-                <span className={s.confidence === "Verified" ? "conf-high" : "conf-med"}>{s.confidence === "Verified" ? "✓ Verified" : "⚠ Developing"}</span>
-              </div>
-            </div>
+      {/* Trending bar */}
+      <div className="trending-bar">
+        <span className="tb-label">Trending</span>
+        <div className="tb-items">
+          {["#MediaBill","Super Eagles","Naira Crisis","Osimhen","EFCC Arrests","Davido Tour","CBN Rate Hike","Nollywood Record"].map(t => (
+            <span key={t} className="tb-item">{t}</span>
           ))}
-        </div>
-
-        {/* Scores */}
-        <SectionHeader title="Scores" />
-        <div style={{ marginBottom:40 }}><Scores /></div>
-
-        {/* Top Stories + Sidebar */}
-        <SectionHeader title="Top Stories" />
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 340px", gap:24, marginBottom:40, alignItems:"start" }}>
-          {/* Articles */}
-          <div style={{ display:"flex", flexDirection:"column", gap:1, background:"var(--border)", border:"1px solid var(--border)" }}>
-            {STORIES.map((s, i) => (
-              <div key={s.id} onClick={() => setStory(s)} style={{
-                background:"var(--black2)", padding:"20px 24px",
-                display:"flex", gap:20, cursor:"pointer", transition:"background 0.2s"
-              }} className="hover:bg-[#141414] transition-colors">
-                <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:32, color:"var(--border)", lineHeight:1, flexShrink:0, width:36 }}>
-                  {String(i+1).padStart(2,"0")}
-                </div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:15, fontWeight:700, color:"var(--white)", marginBottom:6, lineHeight:1.4 }}>{s.headline}</div>
-                  <div style={{ display:"flex", gap:12, fontSize:11, color:"var(--white3)", alignItems:"center" }}>
-                    <span style={{ fontSize:10, fontWeight:700, letterSpacing:"1.5px", textTransform:"uppercase", color: getColor(s.category) }}>{s.category}</span>
-                    <span>{s.time}</span>
-                    <span className={s.confidence === "Verified" ? "conf-high" : "conf-med"} style={{ fontSize:9, padding:"1px 6px" }}>{s.confidence === "Verified" ? "✓" : "⚠"} {s.confidence}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Widgets */}
-          <div>
-            {/* Trending */}
-            <div style={{ background:"var(--black2)", border:"1px solid var(--border)", marginBottom:16 }}>
-              <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", fontFamily:"'Bebas Neue',sans-serif", fontSize:18, letterSpacing:2 }}>
-                Trending <span style={{ color:"var(--orange)" }}>Now</span>
-              </div>
-              <div style={{ padding:"16px 20px" }}>
-                {TRENDS.map((t, i) => (
-                  <div key={t} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid var(--border2)", cursor:"pointer" }}>
-                    <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:"var(--orange)", width:20 }}>#{i+1}</span>
-                    <span style={{ fontSize:13, fontWeight:600, color:"var(--white2)", flex:1 }}>{t}</span>
-                    <span style={{ fontSize:11, color:"var(--white3)" }}>{["48.2","31.7","27.4","22.1","18.9","15.3"][i]}K</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Market */}
-            <div style={{ background:"var(--black2)", border:"1px solid var(--border)", marginBottom:16 }}>
-              <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", fontFamily:"'Bebas Neue',sans-serif", fontSize:18, letterSpacing:2 }}>
-                Market <span style={{ color:"var(--orange)" }}>Data</span>
-              </div>
-              <div style={{ padding:"16px 20px" }}>
-                {MARKET.map(m => (
-                  <div key={m.label} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid var(--border2)" }}>
-                    <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:"var(--white3)", width:80 }}>{m.label}</span>
-                    <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:14, color:"var(--white)", flex:1 }}>{m.val}</span>
-                    <span style={{ fontSize:11, color: m.up ? "var(--green)" : "var(--red)" }}>{m.chg}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Confidence Key */}
-            <div style={{ background:"var(--black2)", border:"1px solid var(--border)" }}>
-              <div style={{ padding:"14px 20px", borderBottom:"1px solid var(--border)", fontFamily:"'Bebas Neue',sans-serif", fontSize:18, letterSpacing:2 }}>
-                AI <span style={{ color:"var(--orange)" }}>Confidence</span>
-              </div>
-              <div style={{ padding:"16px 20px", fontSize:13, color:"var(--white2)", lineHeight:1.7 }}>
-                All NRT stories carry a verification score.<br /><br />
-                <span className="conf-high" style={{ marginBottom:8, display:"inline-flex" }}>✓ Verified</span><br />Multi-source confirmed<br /><br />
-                <span className="conf-med" style={{ margin:"8px 0", display:"inline-flex" }}>⚠ Developing</span><br />Single source, updating<br /><br />
-                <span style={{ fontSize:12, color:"var(--white3)" }}>Human editors review all content before publish.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Leak Section */}
-        <div style={{ background:"var(--black3)", border:"1px solid var(--orange)", padding:40, margin:"40px 0 60px", position:"relative", overflow:"hidden" }}>
-          <div style={{ position:"absolute", top:-40, right:-40, width:200, height:200, background:"radial-gradient(circle,var(--orange-glow) 0%,transparent 70%)", pointerEvents:"none" }} />
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:36, letterSpacing:3, marginBottom:8 }}>
-            GOT A <span style={{ color:"var(--orange)" }}>LEAK?</span>
-          </h2>
-          <p style={{ fontSize:14, color:"var(--white2)", marginBottom:28, maxWidth:500 }}>Submit tips, documents, or insider information securely. All submissions are encrypted and reviewed by our investigative team. Your identity is never exposed.</p>
-          <button onClick={() => setLeak(true)} style={{ background:"var(--orange)", color:"var(--black)", border:"none", fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:700, letterSpacing:2, textTransform:"uppercase", padding:"14px 32px", cursor:"pointer", borderRadius:2 }}>
-            🔒 Submit a Tip Securely
-          </button>
-          <div style={{ fontSize:11, color:"var(--white3)", marginTop:12 }}>🛡 <span style={{ color:"var(--green)" }}>End-to-end encrypted.</span> NRT never reveals sources. Nigerian whistleblower protections apply.</div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer style={{ background:"var(--black2)", borderTop:"1px solid var(--border)", padding:"48px 24px 24px" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
-            <div>
-              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:42, letterSpacing:5, marginBottom:12 }}>NRT<span style={{ color:"var(--orange)" }}>.</span></div>
-              <div style={{ fontSize:13, color:"var(--white3)", lineHeight:1.7, marginBottom:20, maxWidth:280 }}>Nigeria Real Time &mdash; the nation&apos;s first AI-native, 24/7 news network. Breaking news. Deep investigation. Fearless and people-powered.</div>
-              <div style={{ display:"flex", gap:8 }}>
-                {["X / Twitter","WhatsApp","Telegram","TikTok"].map(s => (
-                  <button key={s} style={{ background:"var(--border2)", border:"1px solid var(--border)", color:"var(--white2)", fontSize:11, fontWeight:700, letterSpacing:1, padding:"6px 12px", borderRadius:2, cursor:"pointer", textTransform:"uppercase" }}>{s}</button>
+      {/* TOP LEADERBOARD AD */}
+      <div style={{ maxWidth:1280, margin:"12px auto 0", padding:"0 20px" }}>
+        <div className="ad-slot ad-leaderboard">
+          <div className="ad-inner"><div className="ad-placeholder">728×90 Leaderboard Advertisement</div></div>
+        </div>
+      </div>
+
+      {/* MAIN */}
+      <div className="page-wrap">
+        <div className="main-grid">
+
+          {/* LEFT: CONTENT */}
+          <div className="content-col">
+
+            {/* HERO BLOCK */}
+            <div className="hero-block">
+              {/* Featured story */}
+              <div className="hero-main" onClick={() => setStory(STORIES[0])}>
+                <div style={{ background: getBg(STORIES[0].phClass), aspectRatio:"16/9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:72, position:"relative" }}>
+                  <span>{STORIES[0].emoji}</span>
+                  {/* Orange accent bar */}
+                  <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"var(--orange)" }} />
+                </div>
+                <div className="hero-overlay">
+                  <div className="hero-cat" style={{ color:"var(--orange)" }}>{STORIES[0].category}</div>
+                  <h1 className="hero-hl">{STORIES[0].headline}</h1>
+                  <div className="hero-meta-line">{STORIES[0].time} · <span className="tag-verified" style={{ background:"rgba(255,255,255,0.2)", color:"white" }}>✓ Verified</span></div>
+                </div>
+              </div>
+
+              {/* Side stack */}
+              <div className="hero-side">
+                {STORIES.slice(1,5).map(s => (
+                  <div key={s.id} className="hero-side-item" onClick={() => setStory(s)}>
+                    <div style={{ background: getBg(s.phClass), width:72, height:54, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, borderRadius:2, flexShrink:0 }}>
+                      {s.emoji}
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div className="hsi-cat" style={{ color: getCatColor(s.category) }}>{s.category}</div>
+                      <div className="hsi-hl">{s.headline}</div>
+                      <div className="hsi-time">{s.time}</div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
+
+            {/* LATEST NEWS 3-col */}
+            <SectionHeader title="Latest News" />
+            <div className="card-grid-3" style={{ marginBottom:24 }}>
+              {STORIES.slice(0,3).map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* INLINE AD */}
+            <div className="ad-slot" style={{ height:90, margin:"0 0 20px" }}>
+              <div className="ad-inner"><div className="ad-placeholder">728×90 Inline Advertisement</div></div>
+            </div>
+
+            {/* POLITICS */}
+            <SectionHeader title="Politics" color="var(--red)" />
+            <div className="card-grid-featured" style={{ marginBottom:24 }}>
+              <NewsCard s={STORIES[0]} onStory={setStory} size="large" />
+              <div>
+                {[STORIES[4], STORIES[3]].map(s => <ListCard key={s.id} s={s} onStory={setStory} />)}
+              </div>
+            </div>
+
+            {/* SPORTS SCORES */}
+            <div style={{ borderTop:"3px solid #007A3D", paddingTop:10, marginBottom:14 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, letterSpacing:2 }}>Live Scores</span>
+                <span style={{ fontSize:11, fontWeight:600, letterSpacing:1, textTransform:"uppercase", color:"#007A3D", cursor:"pointer" }}>All Leagues →</span>
+              </div>
+              <div className="scores-scroll">
+                {SCORES.map((sc, i) => (
+                  <div key={i} className={`score-pill${sc.live ? " live" : ""}`}>
+                    <div className="sp-league">{sc.league}</div>
+                    <div className="sp-row"><span className={`sp-team${sc.hs < sc.as ? " dim" : ""}`}>{sc.home}</span><span className="sp-score">{sc.hs}</span></div>
+                    <div className="sp-row"><span className={`sp-team${sc.as < sc.hs ? " dim" : ""}`}>{sc.away}</span><span className="sp-score">{sc.as}</span></div>
+                    <div className={`sp-status${sc.live ? " live" : " ft"}`}>{sc.status}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SPORTS NEWS */}
+            <SectionHeader title="Sports" color="#007A3D" />
+            <div className="card-grid-3" style={{ marginBottom:24 }}>
+              {STORIES.filter(s => s.categorySlug === "sports").slice(0,3).map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* INLINE AD */}
+            <div className="ad-slot" style={{ height:90, margin:"0 0 20px" }}>
+              <div className="ad-inner"><div className="ad-placeholder">728×90 Inline Advertisement</div></div>
+            </div>
+
+            {/* ECONOMY / BUSINESS */}
+            <SectionHeader title="Economy & Business" color="#B45309" />
+            <div className="card-grid-featured" style={{ marginBottom:24 }}>
+              <NewsCard s={STORIES[5]} onStory={setStory} size="large" />
+              <div>
+                {[STORIES[1], STORIES[11]].map(s => <ListCard key={s.id} s={s} onStory={setStory} />)}
+              </div>
+            </div>
+
+            {/* VIDEO SECTION */}
+            <SectionHeader title="Video" />
+            <div className="video-row" style={{ marginBottom:24 }}>
+              {VIDEOS.map((v, i) => (
+                <div key={i} className="vid-card">
+                  <div className="vid-thumb" style={{ background: getBg(v.ph), display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, position:"relative" }}>
+                    <span>{v.emoji}</span>
+                    <div className="vid-play">▶</div>
+                  </div>
+                  <div className="vid-title">{v.title}</div>
+                  <div className="vid-dur">▶ {v.dur}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ENTERTAINMENT */}
+            <SectionHeader title="Entertainment" color="#7C3AED" />
+            <div className="card-grid-3" style={{ marginBottom:24 }}>
+              {STORIES.filter(s => s.categorySlug === "entertainment").slice(0,2).concat(STORIES.filter(s => s.categorySlug === "tech").slice(0,1)).map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* INLINE AD */}
+            <div className="ad-slot" style={{ height:90, margin:"0 0 20px" }}>
+              <div className="ad-inner"><div className="ad-placeholder">728×90 Inline Advertisement</div></div>
+            </div>
+
+            {/* MONEY & HUSTLE */}
+            <SectionHeader title="Money / Hustle" color="#007A3D" />
+            <div className="card-grid-2" style={{ marginBottom:24 }}>
+              {STORIES.filter(s => s.categorySlug === "money").slice(0,2).map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* PODCAST STRIP */}
+            <div className="podcast-strip">
+              <span className="pod-icon">🎙</span>
+              <div className="pod-info">
+                <div className="pod-title">NRT DAILY BRIEFING</div>
+                <div className="pod-desc">Your 5-minute AI-hosted audio digest — top stories, delivered every morning at 7AM WAT</div>
+              </div>
+              <button className="pod-btn">▶ Listen Now</button>
+            </div>
+
+            {/* INVESTIGATION */}
+            <SectionHeader title="Investigations" color="#CC0000" />
+            <div className="card-grid-2" style={{ marginBottom:24 }}>
+              {[STORIES[3], STORIES[0]].map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* MORE NEWS 4-col */}
+            <SectionHeader title="More Stories" />
+            <div className="card-grid-4" style={{ marginBottom:24 }}>
+              {STORIES.slice(5,9).map(s => <NewsCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* LEAK BAND */}
+            <div className="leak-band">
+              <h2>GOT A <span>LEAK?</span></h2>
+              <p>Submit tips, documents, or insider information securely. All submissions are encrypted and reviewed by our investigative team. Your identity is never exposed.</p>
+              <div className="leak-form" style={{ marginBottom:12 }}>
+                <input className="leak-input" placeholder="Your name (optional)" />
+                <select className="leak-select">
+                  <option value="">Category...</option>
+                  <option>Government / Corruption</option>
+                  <option>Security / Military</option>
+                  <option>Business / Finance</option>
+                  <option>Celebrity / Entertainment</option>
+                  <option>Sports</option>
+                  <option>Other</option>
+                </select>
+                <textarea className="leak-textarea" placeholder="Describe the tip or paste information here..." />
+              </div>
+              <button className="btn-submit" onClick={() => alert('Submission encrypted. Our team reviews within 24 hours.')}>🔒 Submit Securely</button>
+              <div className="anon-note">🛡 <span>End-to-end encrypted.</span> NRT never reveals sources. Nigerian whistleblower protections apply.</div>
+            </div>
+
+          </div>
+
+          {/* RIGHT: SIDEBAR */}
+          <div className="sidebar-col">
+
+            {/* Trending */}
+            <div className="widget">
+              <div className="widget-title">Trending <span>Now</span></div>
+              {TRENDS.map((t, i) => (
+                <div key={t.t} className="trend-row">
+                  <span className="tr-rank">{i+1}</span>
+                  <span className="tr-label">{t.t}</span>
+                  <span className="tr-count">{t.n} posts</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Ad */}
+            <div className="ad-slot ad-rect" style={{ marginBottom:24 }}>
+              <div className="ad-inner"><div className="ad-placeholder">300×250<br/>Advertisement</div></div>
+            </div>
+
+            {/* Market */}
+            <div className="widget">
+              <div className="widget-title">Markets <span>Live</span></div>
+              {MARKET.map(m => (
+                <div key={m.l} className="market-row">
+                  <span className="mr-label">{m.l}</span>
+                  <span className="mr-val">{m.v}</span>
+                  <span className={`mr-chg ${m.up ? "up" : "down"}`}>{m.c}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Must Read */}
+            <div className="widget" style={{ marginTop:24 }}>
+              <div className="widget-title">Must <span>Read</span></div>
+              {STORIES.slice(0,5).map(s => <ListCard key={s.id} s={s} onStory={setStory} />)}
+            </div>
+
+            {/* Ad rail */}
+            <div className="ad-slot" style={{ height:250, marginTop:24, marginBottom:24 }}>
+              <div className="ad-inner"><div className="ad-placeholder">300×250<br/>Advertisement</div></div>
+            </div>
+
+            {/* AI Confidence */}
+            <div className="widget">
+              <div className="widget-title">AI <span>Transparency</span></div>
+              <div style={{ padding:"10px 0", fontSize:12, color:"var(--gray-text)", lineHeight:1.7 }}>
+                All NRT stories carry an AI confidence score.<br /><br />
+                <span className="tag-verified">✓ Verified</span> — Multi-source confirmed<br /><br />
+                <span className="tag-developing">⚠ Developing</span> — Single source, updating<br /><br />
+                Human editors review all content before publish. NRT is AI-powered, human-verified.
+              </div>
+            </div>
+
+            {/* Podcast widget */}
+            <div style={{ background:"var(--navy)", padding:16, borderRadius:3, marginTop:24 }}>
+              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:16, letterSpacing:2, color:"white", marginBottom:6 }}>🎙 NRT PODCAST</div>
+              {["Today&apos;s 7AM Briefing · 5min","Week in Review · 12min","Naira Crisis Deep Dive · 8min"].map((p, i) => (
+                <div key={i} style={{ display:"flex", gap:8, alignItems:"center", padding:"8px 0", borderBottom:"1px solid rgba(255,255,255,0.08)", cursor:"pointer" }}>
+                  <span style={{ color:"var(--orange)", fontSize:16 }}>▶</span>
+                  <span style={{ fontSize:12, color:"#ccc" }}>{p}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <footer>
+        <div className="footer-inner">
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24, paddingBottom:24, borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+            <div>
+              <div className="footer-logo">NRT<span>.</span></div>
+              <div className="footer-tagline">Nigeria Real Time — AI-powered. Human-verified. 24/7.</div>
+              <div className="footer-socials">
+                {["X / Twitter","WhatsApp","Telegram","TikTok","YouTube","Instagram"].map(s => (
+                  <button key={s} className="soc-btn">{s}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:11, color:"#888", marginBottom:6 }}>DOWNLOAD APP</div>
+              <div style={{ display:"flex", gap:8 }}>
+                <button className="soc-btn">📱 App Store</button>
+                <button className="soc-btn">🤖 Google Play</button>
+              </div>
+            </div>
+          </div>
+          <div className="footer-grid">
             {[
-              { title:"Sections", links:["Nigeria","Africa","World","Politics","Sports","Entertainment","Money","Opinion"] },
-              { title:"Company", links:["About NRT","Editorial Standards","AI Transparency","Corrections Policy","Advertise","Careers"] },
-              { title:"Legal", links:["Privacy Policy","Terms of Service","NDPR Compliance","Whistleblower Policy","DMCA / Copyright"] },
+              { t:"Nigeria", l:["Politics","Lagos","Abuja","Economy","Security","Education"] },
+              { t:"Africa", l:["East Africa","West Africa","Southern Africa","North Africa","CAF"] },
+              { t:"World", l:["US & Americas","Europe","Middle East","Asia","UK"] },
+              { t:"Sports", l:["Super Eagles","Premier League","AFCON","NBA","Athletics"] },
+              { t:"Business", l:["Markets","Fintech","Oil & Gas","Agriculture","Startups"] },
+              { t:"Entertainment", l:["Nollywood","Music","Celebrity","Lifestyle","Fashion"] },
+              { t:"Money", l:["Personal Finance","Crypto","Jobs","Side Hustles","Investing"] },
+              { t:"Company", l:["About NRT","Editorial","AI Policy","Advertise","Careers","Contact"] },
             ].map(col => (
-              <div key={col.title}>
-                <h4 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:16, letterSpacing:2, color:"var(--white)", marginBottom:16 }}>{col.title}</h4>
-                {col.links.map(l => <div key={l} style={{ fontSize:13, color:"var(--white3)", marginBottom:8, cursor:"pointer" }}>{l}</div>)}
+              <div key={col.t} className="footer-col">
+                <h4>{col.t}</h4>
+                {col.l.map(l => <a key={l}>{l}</a>)}
               </div>
             ))}
           </div>
-          <div style={{ borderTop:"1px solid var(--border2)", paddingTop:20, display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:12, color:"var(--white3)" }}>
+          <div className="footer-bottom">
             <div>© 2026 <span style={{ color:"var(--orange)" }}>NRT</span> · Nigeria Real Time. AI-powered. Human-verified.</div>
-            <div>Built on: <span style={{ color:"var(--orange)" }}>Next.js · Cerebras AI · PostgreSQL · Railway</span></div>
+            <div style={{ color:"#555" }}>Built on Next.js · Cerebras AI · PostgreSQL · Railway</div>
           </div>
         </div>
       </footer>
 
-      {story && <StoryModal story={story} onClose={() => setStory(null)} />}
+      {story && <StoryModal story={story} onClose={() => setStory(null)} onStory={setStory} />}
       {leak && <LeakModal onClose={() => setLeak(false)} />}
     </div>
   );
