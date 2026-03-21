@@ -122,7 +122,7 @@ export default function Home() {
                   <div key={t} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid var(--border2)", cursor:"pointer" }}>
                     <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:"var(--orange)", width:20 }}>#{i+1}</span>
                     <span style={{ fontSize:13, fontWeight:600, color:"var(--white2)", flex:1 }}>{t}</span>
-                    <span style={{ fontSize:11, color:"var(--white3)" }}>{Math.floor(Math.random()*40+10).toFixed(1)}K</span>
+                    <span style={{ fontSize:11, color:"var(--white3)" }}>{["48.2","31.7","27.4","22.1","18.9","15.3"][i]}K</span>
                   </div>
                 ))}
               </div>
@@ -179,7 +179,7 @@ export default function Home() {
           <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
             <div>
               <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:42, letterSpacing:5, marginBottom:12 }}>NRT<span style={{ color:"var(--orange)" }}>.</span></div>
-              <div style={{ fontSize:13, color:"var(--white3)", lineHeight:1.7, marginBottom:20, maxWidth:280 }}>Nigeria Real Time — the nation's first AI-native, 24/7 news network. Breaking news. Deep investigation. Fearless and people-powered.</div>
+              <div style={{ fontSize:13, color:"var(--white3)", lineHeight:1.7, marginBottom:20, maxWidth:280 }}>Nigeria Real Time &mdash; the nation&apos;s first AI-native, 24/7 news network. Breaking news. Deep investigation. Fearless and people-powered.</div>
               <div style={{ display:"flex", gap:8 }}>
                 {["X / Twitter","WhatsApp","Telegram","TikTok"].map(s => (
                   <button key={s} style={{ background:"var(--border2)", border:"1px solid var(--border)", color:"var(--white2)", fontSize:11, fontWeight:700, letterSpacing:1, padding:"6px 12px", borderRadius:2, cursor:"pointer", textTransform:"uppercase" }}>{s}</button>

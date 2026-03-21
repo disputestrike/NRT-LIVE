@@ -10,7 +10,7 @@ export default function LeakModal({ onClose }: { onClose: () => void }) {
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(4px)" }}>
       <div onClick={e => e.stopPropagation()} style={{ background:"var(--black2)", border:"1px solid var(--border)", maxWidth:600, width:"90%", position:"relative", borderTop:"3px solid var(--orange)" }}>
-        <button onClick={onClose} style={{ position:"absolute", top:16, right:16, background:"none", border:"1px solid var(--border)", color:"var(--white2)", fontSize:18, width:32, height:32, cursor:"pointer", borderRadius:2 }}>✕</button>
+        <button aria-label="Close" onClick={onClose} style={{ position:"absolute", top:16, right:16, background:"none", border:"1px solid var(--border)", color:"var(--white2)", fontSize:18, width:32, height:32, cursor:"pointer", borderRadius:2 }}>✕</button>
         <div style={{ padding:40 }}>
           <div style={{ fontSize:10, fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--orange)", marginBottom:12 }}>🔒 Secure Submission</div>
           <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:36, lineHeight:1.1, marginBottom:8, letterSpacing:1 }}>SUBMIT A LEAK</h2>

@@ -21,7 +21,7 @@ export default function StoryModal({ story, onClose }: { story: Story | null; on
         maxWidth:700, width:"90%", maxHeight:"85vh", overflowY:"auto",
         position:"relative", borderTop:"3px solid var(--orange)"
       }}>
-        <button onClick={onClose} style={{
+        <button aria-label="Close article" onClick={onClose} style={{
           position:"absolute", top:16, right:16, background:"none",
           border:"1px solid var(--border)", color:"var(--white2)", fontSize:18,
           width:32, height:32, cursor:"pointer", borderRadius:2
