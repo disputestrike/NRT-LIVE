@@ -21,7 +21,7 @@ export default function Navbar({ onLeak }: { onLeak: () => void }) {
   return (
     <nav className="top-nav" style={{ boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.12)" : "0 2px 10px rgba(0,0,0,0.06)" }}>
       <div className="nav-inner">
-        <Link href="/" className="nrt-logo">NRT<span>.</span></Link>
+        <Link href="/" className="nrt-logo" style={{ fontSize:34, letterSpacing:2 }}>NRT<span>.</span></Link>
         <div className="nav-divider" />
         <div className="nav-links">
           {LINKS.map(({ l, slug }) => (
