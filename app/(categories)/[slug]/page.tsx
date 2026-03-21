@@ -6,7 +6,7 @@ import Ticker from "../../components/Ticker";
 import Navbar from "../../components/Navbar";
 import StoryModal from "../../components/StoryModal";
 import LeakModal from "../../components/LeakModal";
-import { STORIES, Story, getCatColor } from "../../data/stories";
+import { STORIES, bySlug, Story, getCatColor } from "../../data/stories";
 
 const SLUG_LABELS: Record<string,string> = {
   politics:"Politics", economy:"Economy & Business", sports:"Sports",
@@ -22,14 +22,14 @@ export default function CategoryPage() {
   const [leak, setLeak] = useState(false);
 
   const articles = useMemo(() => {
-    const filtered = STORIES.filter(s =>
-      s.categorySlug === slug ||
+    const direct = bySlug(slug);
+    if (direct.length > 0) return direct;
+    // Fallback: soft match
+    const soft = STORIES.filter(s =>
       s.category.toLowerCase().includes(slug) ||
-      (slug === "nigeria" && ["politics","investigation","abuja","health"].some(c =>
-        s.categorySlug === c || s.category.toLowerCase().includes(c)
-      ))
+      (slug === "nigeria" && ["politics","investigation","nigeria","health"].includes(s.categorySlug))
     );
-    return filtered.length > 0 ? filtered : STORIES.slice(0, 9);
+    return soft.length > 0 ? soft : STORIES.slice(0, 9);
   }, [slug]);
 
   const label = SLUG_LABELS[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
