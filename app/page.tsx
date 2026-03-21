@@ -106,7 +106,7 @@ export default function Home() {
   const nigeria  = s.filter(x => ["nigeria","investigation","health"].includes(x.categorySlug));
 
   return (
-    <div style={{ background:"var(--gray-bg)", minHeight:"100vh" }}>
+    <div style={{ background:"var(--gray-bg)", minHeight:"100vh", width:"100%", maxWidth:"100vw", overflowX:"hidden" }}>
       <Ticker />
       <Navbar onLeak={() => setLeak(true)} />
 
@@ -145,10 +145,10 @@ export default function Home() {
         <div className="main-grid">
 
           {/* ── CONTENT ── */}
-          <div>
+          <div style={{ minWidth:0, width:"100%", overflow:"hidden" }}>
 
             {/* HERO */}
-            <div className="hero-wrap">
+            <div className="hero-wrap" style={{ width:"100%", minWidth:0 }}>
               <div className="hero-main" onClick={() => setStory(s[0])}>
                 <Image src={s[0].image} alt={s[0].headline} width={800} height={450} style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover" }} />
                 <div className="hero-overlay">
@@ -181,7 +181,7 @@ export default function Home() {
 
             {/* LATEST NEWS */}
             <SH title="Latest News" />
-            <div className="card-grid-3">
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               {s.slice(0,3).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -197,7 +197,7 @@ export default function Home() {
 
             {/* POLITICS */}
             <SH title="Politics" color="var(--red)" href="/politics" />
-            <div className="card-featured">
+            <div className="card-featured" style={{ minWidth:0, width:"100%" }}>
               <NC s={politics[0] || s[0]} os={setStory} size="lg" />
               <div>
                 {(politics.length > 1 ? politics.slice(1,3) : s.slice(1,3)).map(st => <LC key={st.id} s={st} os={setStory} />)}
@@ -222,7 +222,7 @@ export default function Home() {
 
             {/* SPORTS */}
             <SH title="Sports" color="#007A3D" href="/sports" />
-            <div className="card-grid-3">
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               {sports.slice(0,3).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -238,7 +238,7 @@ export default function Home() {
 
             {/* ECONOMY */}
             <SH title="Economy & Business" color="#B45309" href="/economy" />
-            <div className="card-featured">
+            <div className="card-featured" style={{ minWidth:0, width:"100%" }}>
               <NC s={economy[0] || s[1]} os={setStory} size="lg" />
               <div>
                 {(economy.length > 1 ? economy.slice(1,3) : s.slice(4,6)).map(st => <LC key={st.id} s={st} os={setStory} />)}
@@ -250,7 +250,7 @@ export default function Home() {
 
             {/* VIDEO */}
             <SH title="Video" href="#" />
-            <div className="vid-grid">
+            <div className="vid-grid" style={{ minWidth:0, width:"100%" }}>
               {VIDS.map((v, i) => (
                 <div key={i} className="vid-card" onClick={() => setStory(v.s)}>
                   <div className="vid-thumb">
@@ -269,7 +269,7 @@ export default function Home() {
 
             {/* ENTERTAINMENT */}
             <SH title="Entertainment" color="#7C3AED" href="/entertainment" />
-            <div className="card-grid-3">
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               {[...ent, ...tech].slice(0,3).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -285,7 +285,7 @@ export default function Home() {
 
             {/* MONEY / HUSTLE */}
             <SH title="Money / Hustle" color="#007A3D" href="/money" />
-            <div className="card-grid-2">
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               {[...money, ...s.filter(x => x.categorySlug === "tech")].slice(0,2).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -310,13 +310,13 @@ export default function Home() {
 
             {/* INVESTIGATION */}
             <SH title="Investigations" color="var(--red)" href="/investigation" />
-            <div className="card-grid-2">
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               {[s[3], s[15]].map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
             {/* NIGERIA / LOCAL */}
             <SH title="Nigeria" color="var(--red)" href="/nigeria" />
-            <div className="card-grid-3">
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               {nigeria.slice(0,3).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -334,19 +334,19 @@ export default function Home() {
 
             {/* MORE STORIES 4-col */}
             <SH title="More Stories" />
-            <div className="card-grid-4">
+            <div className="card-grid-4" style={{ minWidth:0, width:"100%" }}>
               {s.slice(8,12).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
             {/* TECH */}
             <SH title="Tech" color="#1D4ED8" href="/tech" />
-            <div className="card-grid-3">
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               {[...tech, ...money].slice(0,3).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
             {/* HEALTH */}
             <SH title="Health" color="#0891B2" href="/health" />
-            <div className="card-grid-2">
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               {s.filter(x => x.categorySlug === "health").concat(s.slice(0,2)).slice(0,2).map(st => <NC key={st.id} s={st} os={setStory} />)}
             </div>
 
@@ -384,7 +384,7 @@ export default function Home() {
           </div>
 
           {/* ── SIDEBAR ── */}
-          <div>
+          <div style={{ minWidth:0, width:"316px", flexShrink:0 }}>
 
             {/* Weather widget */}
             <div className="weather-card">

@@ -50,7 +50,7 @@ export default function CategoryPage() {
       </div>
 
       <div style={{ maxWidth:1300, margin:"0 auto", padding:"24px 20px" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:24 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:24, minWidth:0, width:"100%" }}>
           <div>
             {/* Featured */}
             {articles[0] && (
@@ -68,7 +68,7 @@ export default function CategoryPage() {
             )}
 
             {/* Grid */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16, minWidth:0, width:"100%" }}>
               {articles.slice(1).map(s => (
                 <div key={s.id} onClick={() => setStory(s)} className="nc" style={{ cursor:"pointer" }}>
                   <div className="nc-img-wrap">

@@ -20,7 +20,7 @@ export default function StoryModal({ story, onClose, onStory }: {
 
   return (
     <div className="modal-bg open" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+      <div className="modal-box" style={{ width:"100%", maxWidth:960, overflowX:"hidden" }} onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose} aria-label="Close">✕</button>
 
         {/* Top ad */}
@@ -29,7 +29,7 @@ export default function StoryModal({ story, onClose, onStory }: {
         </div>
 
         <div className="modal-inner">
-          <div className="art-grid">
+          <div className="art-grid" style={{ width:"100%", minWidth:0 }}>
             {/* Article */}
             <div>
               <div className="art-cat" style={{ color }}>{story.category}</div>
@@ -85,7 +85,7 @@ export default function StoryModal({ story, onClose, onStory }: {
           {/* More stories */}
           <div style={{ marginTop:28, borderTop:"3px solid var(--black)", paddingTop:14 }}>
             <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, letterSpacing:2, marginBottom:14 }}>More Stories</div>
-            <div className="card-grid-4">
+            <div className="card-grid-4" style={{ width:"100%", minWidth:0 }}>
               {more.map(s => (
                 <div key={s.id} onClick={() => onStory(s)} className="nc fade-up">
                   <div className="nc-img-wrap">
