@@ -1,44 +1,47 @@
-/**
- * GET /api/status — shows exactly what DB tables exist and their columns
- * Use this to verify your Railway DB is connected and see table structure
- */
 import { NextResponse } from "next/server";
 import { getDbStatus, getTableColumns } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const status = await getDbStatus();
-
-  // Introspect all 11 expected tables
-  const expectedTables = [
-    "users","categories","articles","media","tags",
-    "article_tags","newsletter_subscribers","leak_submissions",
-    "ad_placements","site_settings"
-  ];
+  const db = await getDbStatus();
 
   const tableDetails: Record<string, string[]> = {};
-  if (status.connected) {
-    for (const t of expectedTables) {
-      if (status.tables.includes(t)) {
-        tableDetails[t] = await getTableColumns(t);
-      } else {
-        tableDetails[t] = ["TABLE NOT FOUND"];
-      }
-    }
+  for (const t of db.tables) {
+    tableDetails[t] = await getTableColumns(t);
   }
 
   return NextResponse.json({
-    connected: status.connected,
-    error: status.error,
-    articleCount: status.articleCount,
-    tablesFound: status.tables,
-    tableDetails,
-    env: {
-      DATABASE_URL: !!process.env.DATABASE_URL,
-      CEREBRAS_API_KEY: !!process.env.CEREBRAS_API_KEY,
-      CRON_SECRET: !!process.env.CRON_SECRET,
+    database: {
+      connected:    db.connected,
+      articleCount: db.articleCount,
+      tables:       db.tables,
+      tableDetails,
+      error:        db.error,
     },
-    timestamp: new Date().toISOString(),
+    cerebras: {
+      keys: [
+        !!process.env.CEREBRAS_API_KEY,
+        !!process.env.CEREBRAS_API_KEY_2,
+        !!process.env.CEREBRAS_API_KEY_3,
+        !!process.env.CEREBRAS_API_KEY_4,
+        !!process.env.CEREBRAS_API_KEY_5,
+      ],
+      hardcodedFallback: true,
+      endpoint: "https://api.cerebras.ai/v1/chat/completions",
+      model: "llama3.1-70b",
+    },
+    env: {
+      DATABASE_URL:    !!process.env.DATABASE_URL,
+      CRON_SECRET:     !!process.env.CRON_SECRET,
+      NODE_ENV:        process.env.NODE_ENV,
+    },
+    crawl: {
+      trigger:   "POST /api/crawl",
+      auth:      "Authorization: Bearer nrt-cron-2026",
+      topics:    15,
+      perCrawl:  5,
+    },
+    ts: new Date().toISOString(),
   });
 }

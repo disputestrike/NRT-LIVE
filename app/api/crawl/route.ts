@@ -1,7 +1,6 @@
 /**
- * NRT Live Crawler
- * Uses Cerebras llama3.1-70b with round-robin key rotation
- * Keys hardcoded as fallback — works immediately on Railway
+ * NRT Crawler — Cerebras llama3.1-70b
+ * Keys from env with hardcoded fallback — works immediately
  */
 import { NextRequest, NextResponse } from "next/server";
 import { insertArticle } from "../../../lib/db";
@@ -9,55 +8,41 @@ import { insertArticle } from "../../../lib/db";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-// Round-robin key rotation — same 5 keys as lib/cerebras.ts
-const CEREBRAS_KEYS = [
-  process.env.CEREBRAS_KEY_1 || "csk-j839dc68v5mtd323f5jfvm82rkhyny3dy8kdxyr93w2ertnt",
-  process.env.CEREBRAS_KEY_2 || "csk-jfwhwetet942t4ndxjph5t83v3rrcypd48tvdce3tdk9tkh3",
-  process.env.CEREBRAS_KEY_3 || "csk-vtdn3ypfw353xmevcce9wr8w6h2evwm8kpxyh5tnwkw5v8wv",
-  process.env.CEREBRAS_KEY_4 || "csk-fpp82tdfhyhy955rff4w6pe59vpyrmmc633htrdwwhhwfp6e",
-  process.env.CEREBRAS_KEY_5 || "csk-3rmkpjm3d5hcxf9pxjj6xy8yh3w3299p68tjnvfphm9kvx3t",
+// All 5 keys — env first, hardcoded fallback
+const KEYS = [
+  process.env.CEREBRAS_API_KEY   || "csk-j839dc68v5mtd323f5jfvm82rkhyny3dy8kdxyr93w2ertnt",
+  process.env.CEREBRAS_API_KEY_2 || "csk-jfwhwetet942t4ndxjph5t83v3rrcypd48tvdce3tdk9tkh3",
+  process.env.CEREBRAS_API_KEY_3 || "csk-vtdn3ypfw353xmevcce9wr8w6h2evwm8kpxyh5tnwkw5v8wv",
+  process.env.CEREBRAS_API_KEY_4 || "csk-fpp82tdfhyhy955rff4w6pe59vpyrmmc633htrdwwhhwfp6e",
+  process.env.CEREBRAS_API_KEY_5 || "csk-3rmkpjm3d5hcxf9pxjj6xy8yh3w3299p68tjnvfphm9kvx3t",
 ];
-let keyIdx = 0;
-function nextKey() { return CEREBRAS_KEYS[keyIdx++ % CEREBRAS_KEYS.length]; }
+let ki = 0;
+const nextKey = () => KEYS[ki++ % KEYS.length];
 
 const TOPICS = [
-  { cat:"world",         q:"Iran Strait of Hormuz oil war US military latest breaking news" },
-  { cat:"world",         q:"US China trade war tariffs sanctions latest news today" },
-  { cat:"world",         q:"Russia Ukraine ceasefire war news latest today" },
-  { cat:"world",         q:"Middle East Gaza Israel conflict latest breaking news" },
-  { cat:"politics",      q:"Nigeria Senate Tinubu government parliament latest news" },
-  { cat:"politics",      q:"Nigeria state governor election court ruling news" },
-  { cat:"economy",       q:"Nigeria naira dollar exchange rate CBN latest news" },
-  { cat:"economy",       q:"Nigeria oil NNPC fuel petrol price news today" },
-  { cat:"sports",        q:"Super Eagles Nigeria AFCON football match result" },
-  { cat:"sports",        q:"Premier League Champions League football latest results" },
-  { cat:"entertainment", q:"Nollywood Davido Burna Boy Nigerian music latest news" },
-  { cat:"investigation", q:"Nigeria EFCC corruption fraud arrest court latest" },
-  { cat:"africa",        q:"Africa South Africa Kenya Ghana Ethiopia breaking news" },
-  { cat:"tech",          q:"Nigeria fintech startup AI technology latest news" },
-  { cat:"health",        q:"Nigeria health WHO disease outbreak vaccine latest" },
+  { cat:"world",         img:"1529107386315-e1a2ed48a620", q:"Iran oil Strait Hormuz US military war today 2026" },
+  { cat:"world",         img:"1529107386315-e1a2ed48a620", q:"US China trade war tariffs sanctions breaking news today" },
+  { cat:"world",         img:"1578662996442-48f60103fc96", q:"Russia Ukraine war ceasefire peace talks latest news" },
+  { cat:"world",         img:"1529107386315-e1a2ed48a620", q:"Gaza Middle East Israel war humanitarian latest news" },
+  { cat:"politics",      img:"1555848962-6e79363ec58f", q:"Nigeria Tinubu Senate government policy latest news today" },
+  { cat:"politics",      img:"1540910419892-4a36d2c3266c", q:"Nigeria governor court ruling election news today" },
+  { cat:"economy",       img:"1611974789855-9c2a0a7236a3", q:"Nigeria naira dollar CBN exchange rate today 2026" },
+  { cat:"economy",       img:"1601027847350-0285867c31f7", q:"Nigeria oil NNPC fuel petrol price latest 2026" },
+  { cat:"economy",       img:"1486406146926-c627a92ad1ab", q:"Nigeria inflation economy GDP business news today" },
+  { cat:"sports",        img:"1579952363873-27f3bade9f55", q:"Super Eagles Nigeria football AFCON result today" },
+  { cat:"sports",        img:"1508098682722-e99c43a406b2", q:"Premier League Champions League football results today" },
+  { cat:"entertainment", img:"1493225457124-a3eb161ffa5f", q:"Nollywood Davido Burna Boy Afrobeats news today" },
+  { cat:"investigation", img:"1450101499163-c8848c66ca85", q:"Nigeria EFCC corruption fraud arrest court today" },
+  { cat:"africa",        img:"1547471080-7cc2caa01a7e", q:"Africa South Africa Kenya Ghana Ethiopia news today" },
+  { cat:"tech",          img:"1677442135703-1787eea5ce01", q:"Nigeria fintech AI startup technology news today" },
 ];
 
-const CAT_IMAGES: Record<string, string> = {
-  world:         "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=900&q=80",
-  politics:      "https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=900&q=80",
-  economy:       "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80",
-  sports:        "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=900&q=80",
-  entertainment: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&q=80",
-  investigation: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=900&q=80",
-  nigeria:       "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=900&q=80",
-  africa:        "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=900&q=80",
-  tech:          "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80",
-  health:        "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=80",
-};
-
-async function generateStory(cat: string, topic: string) {
+async function generateStory(cat: string, q: string, img: string) {
   const today = new Date().toLocaleDateString("en-NG", {
     weekday:"long", year:"numeric", month:"long", day:"numeric"
   });
 
-  // Try each key with 429 backoff
-  for (let attempt = 0; attempt < CEREBRAS_KEYS.length; attempt++) {
+  for (let attempt = 0; attempt < KEYS.length; attempt++) {
     const key = nextKey();
     try {
       const res = await fetch("https://api.cerebras.ai/v1/chat/completions", {
@@ -69,21 +54,23 @@ async function generateStory(cat: string, topic: string) {
         body: JSON.stringify({
           model: "llama3.1-70b",
           max_tokens: 1200,
-          temperature: 0.7,
+          temperature: 0.75,
           messages: [
             {
               role: "system",
-              content: `You are a senior journalist at NRT (Nigeria Real Time). Today is ${today}. Write authoritative breaking news for Nigerian and African audiences. Be specific: real names, real numbers, real locations. Never vague.`
+              content: `You are a senior journalist at NRT (Nigeria Real Time), Africa's boldest AI-native news network. Today is ${today}. Write authoritative journalism for Nigerian audiences. Use specific names, numbers, and locations. Never be vague or generic.`
             },
             {
               role: "user",
-              content: `Write a breaking news article about: "${topic}"
+              content: `Write a complete breaking news article about this topic: "${q}"
 
-Return ONLY this JSON (no markdown):
+The article must reflect what is actually happening in the world right now in 2026. Include real geopolitical context, real named officials and countries, specific figures and dates.
+
+Return ONLY valid JSON — no markdown, no explanation:
 {
-  "headline": "Specific urgent headline with real details, 8-14 words",
-  "snippet": "2-3 sentences with key facts, max 55 words",
-  "body": "<p>Opening with the main breaking development. Specific names and facts.</p><p>Context and why this matters to Nigeria and Africa.</p><p>Official reactions and statements.</p><p>Implications and what analysts are saying.</p><p>What happens next — timeline and expectations.</p>"
+  "headline": "Urgent specific headline with real details, 8-14 words",
+  "snippet": "2-3 sentences with the core breaking facts. Max 55 words.",
+  "body": "<p>Opening paragraph: the main breaking development with specific names, places, numbers.</p><p>Second paragraph: background context and why this matters.</p><p>Third paragraph: official reactions and statements from named sources.</p><p>Fourth paragraph: implications for Nigeria and Africa specifically.</p><p>Fifth paragraph: what happens next — expected timeline and analyst views.</p>"
 }`
             }
           ]
@@ -91,89 +78,83 @@ Return ONLY this JSON (no markdown):
       });
 
       if (res.status === 429) {
-        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
         continue;
       }
-
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`Cerebras ${res.status}: ${err.slice(0,150)}`);
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0,150)}`);
 
       const data = await res.json();
       const text = data.choices?.[0]?.message?.content || "";
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("No JSON in response");
+      const m = text.match(/\{[\s\S]*\}/);
+      if (!m) throw new Error("No JSON found");
+      const p = JSON.parse(m[0]);
+      if (!p.headline || !p.body) throw new Error("Missing fields");
 
-      const parsed = JSON.parse(match[0]);
-      if (!parsed.headline || !parsed.body) throw new Error("Missing fields");
-      return parsed as { headline:string; snippet:string; body:string };
-
-    } catch (err: unknown) {
-      if (attempt === CEREBRAS_KEYS.length - 1) throw err;
+      return {
+        headline: p.headline as string,
+        snippet:  p.snippet  as string || "",
+        body:     p.body     as string,
+        image_url: `https://images.unsplash.com/photo-${img}?w=900&q=80`,
+      };
+    } catch (err) {
+      if (attempt === KEYS.length - 1) throw err;
       await new Promise(r => setTimeout(r, 500));
     }
   }
-  throw new Error("All keys exhausted");
+  throw new Error("All keys failed");
 }
 
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("authorization") || "";
   const secret = process.env.CRON_SECRET || "nrt-cron-2026";
   if (!auth.includes(secret)) {
-    return NextResponse.json({ error:"Unauthorized" }, { status:401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = {
-    attempted: 0, saved: 0, errors: [] as string[],
-    dbConnected: !!process.env.DATABASE_URL,
-  };
+  const results = { attempted:0, saved:0, errors:[] as string[] };
+  const picked = [...TOPICS].sort(()=>Math.random()-0.5).slice(0,5);
 
-  const shuffled = [...TOPICS].sort(()=>Math.random()-0.5).slice(0,5);
-
-  for (const topic of shuffled) {
+  for (const t of picked) {
     try {
       results.attempted++;
-      const story = await generateStory(topic.cat, topic.q);
-
+      const story = await generateStory(t.cat, t.q, t.img);
       const id = await insertArticle({
-        category: topic.cat,
-        category_slug: topic.cat,
-        headline: story.headline,
-        snippet: story.snippet,
-        body: story.body,
-        confidence: "Verified",
-        image_url: CAT_IMAGES[topic.cat] || CAT_IMAGES.world,
-        source_url: "",
-        is_breaking: ["world","investigation","politics"].includes(topic.cat),
+        category:      t.cat,
+        category_slug: t.cat,
+        headline:      story.headline,
+        snippet:       story.snippet,
+        body:          story.body,
+        image_url:     story.image_url,
+        is_breaking:   ["world","investigation","politics"].includes(t.cat),
       });
-
       if (id) results.saved++;
-      else results.errors.push(`${topic.cat}: DB save failed`);
-
+      else results.errors.push(`${t.cat}: DB save returned null`);
       await new Promise(r => setTimeout(r, 400));
-    } catch (err:unknown) {
-      results.errors.push(`${topic.cat}: ${err instanceof Error ? err.message.slice(0,100) : "error"}`);
+    } catch (e: unknown) {
+      results.errors.push(`${t.cat}: ${e instanceof Error ? e.message.slice(0,100) : "error"}`);
     }
   }
 
   return NextResponse.json({
-    success: results.saved > 0,
-    provider: "Cerebras llama3.1-70b",
-    keysAvailable: CEREBRAS_KEYS.length,
+    success:    results.saved > 0,
+    provider:   "Cerebras llama3.1-70b",
+    db:         !!process.env.DATABASE_URL,
     ...results,
-    crawledAt: new Date().toISOString(),
+    crawledAt:  new Date().toISOString(),
   });
 }
 
 export async function GET() {
+  const { getDbStatus } = await import("../../../lib/db");
+  const db = await getDbStatus();
   return NextResponse.json({
-    status: "NRT Cerebras Crawler ACTIVE",
-    provider: "Cerebras llama3.1-70b",
-    endpoint: "https://api.cerebras.ai/v1/chat/completions",
-    keysLoaded: CEREBRAS_KEYS.length,
-    dbReady: !!process.env.DATABASE_URL,
-    topics: TOPICS.length,
-    howToTrigger: "POST /api/crawl with Authorization: Bearer nrt-cron-2026",
+    status:          "NRT Cerebras Crawler — ACTIVE",
+    provider:        "Cerebras llama3.1-70b",
+    endpoint:        "https://api.cerebras.ai/v1/chat/completions",
+    keysLoaded:      KEYS.length,
+    db_connected:    db.connected,
+    db_articles:     db.articleCount,
+    db_tables:       db.tables,
+    trigger:         "POST /api/crawl   Authorization: Bearer nrt-cron-2026",
   });
 }
