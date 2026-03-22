@@ -37,8 +37,10 @@ export default function CategoryPage() {
 
   return (
     <div style={{ background:"var(--gray-bg)", minHeight:"100vh" }}>
-      <Ticker />
-      <Navbar onLeak={() => setLeak(true)} />
+      <div className="sticky-header">
+        <Ticker />
+        <Navbar onLeak={() => setLeak(true)} />
+      </div>
 
       {/* Section banner */}
       <div style={{ background:`linear-gradient(135deg,${color}18,${color}06)`, borderBottom:`4px solid ${color}`, padding:"28px 20px" }}>

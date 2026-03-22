@@ -118,8 +118,10 @@ export default function Home() {
 
   return (
     <div style={{ background:"var(--gray-bg)", minHeight:"100vh", width:"100%", maxWidth:"100vw", overflowX:"hidden" }}>
-      <Ticker />
-      <Navbar onLeak={() => setLeak(true)} />
+      <div className="sticky-header">
+        <Ticker />
+        <Navbar onLeak={() => setLeak(true)} />
+      </div>
 
       {/* Breaking bar */}
       <div className="breaking-bar">
