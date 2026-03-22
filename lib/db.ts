@@ -2,7 +2,8 @@
 // Falls back to in-memory store for dev/demo
 import { STORIES } from "../app/data/stories";
 
-let pool: any = null;
+import type { Pool as PgPool } from "pg";
+let pool: PgPool | null = null;
 
 async function getPool() {
   if (pool) return pool;
@@ -80,11 +81,11 @@ function getFallbackById(id: string): Article | null {
   const s = STORIES.find(s => s.id === id);
   return s ? storyToArticle(s) : null;
 }
-function storyToArticle(s: any): Article {
+function storyToArticle(s: { id:string; category:string; categorySlug:string; headline:string; snippet:string; body:string; emoji?:string; phClass?:string; confidence:string; related?:string[] }): Article {
   return {
     id: s.id, category: s.category, category_slug: s.categorySlug,
     headline: s.headline, snippet: s.snippet, body: s.body,
-    emoji: s.emoji, ph_class: s.phClass, confidence: s.confidence,
+    emoji: s.emoji || "📰", ph_class: s.phClass || "ph-pol", confidence: s.confidence,
     source_url: "", image_url: "", published_at: new Date().toISOString(),
     is_breaking: false, related_ids: s.related || []
   };

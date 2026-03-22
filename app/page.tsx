@@ -8,6 +8,7 @@ import StoryModal from "./components/StoryModal";
 import LeakModal from "./components/LeakModal";
 import { S, Story, getCatColor } from "./data/stories";
 import ScoresStrip from "./components/ScoresStrip";
+import LiveFeed from "./components/LiveFeed";
 
 /* ── Shared helpers ─────────────────────────────────────────── */
 function SH({ title, color="var(--black)", href="/" }: { title:string; color?:string; href?:string }) {
@@ -177,13 +178,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* LATEST — 3 different categories */}
+            {/* LATEST — live feed polls /api/news every 90s */}
             <SH title="Latest News" />
-            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.economy[0]}       os={setStory} />
-              <NC s={S.investigation[0]} os={setStory} />
-              <NC s={S.africa[0]}        os={setStory} />
-            </div>
+            <LiveFeed onStory={setStory} />
 
             <Ad h={90} icon="🎓" msg="Study Abroad 2026 — Scholarships Available for Nigerian Students" cta="Apply Now" ctaColor="var(--navy)" />
 
