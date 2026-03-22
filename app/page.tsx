@@ -37,9 +37,7 @@ function NC({ s, os, size="sm" }: { s:Story; os:(x:Story)=>void; size?:"sm"|"md"
         <div className="nc-snippet">{s.snippet}</div>
         <div className="nc-meta">
           <span>{s.time}</span>
-          <span className={`conf-pill ${s.confidence==="Verified"?"conf-v":"conf-d"}`}>
-            {s.confidence==="Verified"?"✓ Verified":"⚠ Developing"}
-          </span>
+          
         </div>
       </div>
     </div>
@@ -50,7 +48,8 @@ function LC({ s, os }: { s:Story; os:(x:Story)=>void }) {
   return (
     <div className="lc" onClick={() => os(s)}>
       <div style={{ position:"relative", width:76, height:57, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
-        <Image src={s.image} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px" />
+        <Image src={s.image || `https://picsum.photos/seed/${s.id}/76/57`} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px"
+          onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/76/57`;}} />
       </div>
       <div className="lc-body">
         <div className="lc-cat" style={{ color:getCatColor(s.category) }}>{s.category}</div>
@@ -140,7 +139,7 @@ export default function Home() {
                   <div className="hero-hl">{hero.headline}</div>
                   <div className="hero-meta">
                     <span>{hero.time}</span><span>·</span>
-                    <span className="conf-pill conf-v">✓ {hero.confidence}</span>
+                    
                     <span>·</span><span>NRT Newsroom</span>
                   </div>
                 </div>
@@ -175,7 +174,7 @@ export default function Home() {
                 <div className="nc-body">
                   <div className="nc-hl nc-hl-lg">{S.politics[1].headline}</div>
                   <div className="nc-snippet">{S.politics[1].snippet}</div>
-                  <div className="nc-meta"><span>{S.politics[1].time}</span><span className="conf-pill conf-v">✓ Verified</span></div>
+                  <div className="nc-meta"><span>{S.politics[1].time}</span></div>
                 </div>
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
@@ -191,9 +190,9 @@ export default function Home() {
             {/* SPORTS — 3 cards */}
             <SH title="Sports" color="#007A3D" href="/sports" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.sports[0]} os={setStory} />
-              <NC s={S.sports[1]} os={setStory} />
               <NC s={S.sports[2]} os={setStory} />
+              <NC s={S.sports[3]} os={setStory} />
+              <NC s={S.sports[4]} os={setStory} />
             </div>
 
             <Ad h={90} icon="💊" msg="Health Insurance Starting ₦5,000/month — NRT Partners" cta="Get Quote" ctaColor="#0891B2" />
@@ -211,7 +210,7 @@ export default function Home() {
                 <div className="nc-body">
                   <div className="nc-hl nc-hl-lg">{S.economy[0].headline}</div>
                   <div className="nc-snippet">{S.economy[0].snippet}</div>
-                  <div className="nc-meta"><span>{S.economy[0].time}</span><span className="conf-pill conf-v">✓ Verified</span></div>
+                  <div className="nc-meta"><span>{S.economy[0].time}</span></div>
                 </div>
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
@@ -243,9 +242,9 @@ export default function Home() {
             {/* ENTERTAINMENT — 3 cards */}
             <SH title="Entertainment & Culture" color="#7C3AED" href="/entertainment" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.entertainment[0]} os={setStory} />
               <NC s={S.entertainment[1]} os={setStory} />
               <NC s={S.entertainment[2]} os={setStory} />
+              <NC s={S.entertainment[3]} os={setStory} />
             </div>
 
             {/* AFRICA — 3 cards */}
@@ -349,7 +348,7 @@ export default function Home() {
           </div>
 
           {/* ════ SIDEBAR ════ */}
-          <div style={{ minWidth:0, width:"100%", display:"flex", flexDirection:"column", gap:20 }}>
+          <div style={{ minWidth:0, width:"100%", display:"flex", flexDirection:"column", gap:20, alignSelf:"stretch" }}>
 
             {/* Weather */}
             <div className="weather-card">
@@ -414,10 +413,10 @@ export default function Home() {
             <div className="widget">
               <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Must Read</div></div>
               <div className="widget-body">
-                <LC s={S.investigation[0]} os={setStory} />
-                <LC s={S.politics[1]}      os={setStory} />
-                <LC s={S.economy[0]}       os={setStory} />
-                <LC s={S.sports[2]}        os={setStory} />
+                <LC s={S.nigeria[2]}    os={setStory} />
+                <LC s={S.sports[4]}     os={setStory} />
+                <LC s={S.africa[1]}     os={setStory} />
+                <LC s={S.tech[0]}       os={setStory} />
               </div>
             </div>
 
@@ -474,9 +473,14 @@ export default function Home() {
             <div className="widget">
               <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion & Analysis</div></div>
               <div className="widget-body">
-                <LC s={S.opinion[0]} os={setStory} />
-                <LC s={S.opinion[1]} os={setStory} />
-                <LC s={S.opinion[2]} os={setStory} />
+                <div style={{padding:"8px 0",borderBottom:"1px solid var(--border)"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:"#7C3AED",letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>OPINION</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#000",lineHeight:1.3,cursor:"pointer"}} onClick={()=>setStory(S.opinion[0])}>{S.opinion[0].headline}</div>
+                </div>
+                <div style={{padding:"8px 0"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:"#7C3AED",letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>OPINION</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#000",lineHeight:1.3,cursor:"pointer"}} onClick={()=>setStory(S.opinion[1])}>{S.opinion[1].headline}</div>
+                </div>
               </div>
             </div>
 
@@ -504,6 +508,8 @@ export default function Home() {
                 <LC s={S.world[0]} os={setStory} />
                 <LC s={S.world[1]} os={setStory} />
                 <LC s={S.world[2]} os={setStory} />
+                <LC s={S.health[0]} os={setStory} />
+                <LC s={S.money[0]} os={setStory} />
               </div>
             </div>
 
