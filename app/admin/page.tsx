@@ -178,7 +178,7 @@ export default function AdminPage() {
               { step:"1", label:"Railway Project", detail:"New Project → Deploy from GitHub → disputestrike/NRT-LIVE", done:true },
               { step:"2", label:"PostgreSQL Plugin", detail:"Add Railway PostgreSQL plugin to your project", done:false },
               { step:"3", label:"Run Schema", detail:"psql $DATABASE_URL < lib/schema.sql", done:false },
-              { step:"4", label:"ANTHROPIC_API_KEY", detail:"Set in Railway environment variables (console.anthropic.com)", done:false },
+              { step:"4", label:"CEREBRAS_API_KEY", detail:"Set in Railway environment variables (cloud.cerebras.ai)", done:false },
               { step:"5", label:"DATABASE_URL", detail:"Auto-set by Railway PostgreSQL plugin", done:false },
               { step:"6", label:"CRON_SECRET", detail:"Set to: nrt-cron-2026 (or your own)", done:false },
               { step:"7", label:"Schedule Crawl", detail:"POST /api/crawl every 15 mins — use Railway Cron or cron-job.org", done:false },

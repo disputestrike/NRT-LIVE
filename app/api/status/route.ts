@@ -36,7 +36,7 @@ export async function GET() {
     tableDetails,
     env: {
       DATABASE_URL: !!process.env.DATABASE_URL,
-      ANTHROPIC_API_KEY: !!process.env.ANTHROPIC_API_KEY,
+      CEREBRAS_API_KEY: !!process.env.CEREBRAS_API_KEY,
       CRON_SECRET: !!process.env.CRON_SECRET,
     },
     timestamp: new Date().toISOString(),

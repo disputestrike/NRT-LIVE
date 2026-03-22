@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.80.0",
     "@types/pg": "^8.20.0",
     "cheerio": "^1.2.0",
     "isomorphic-dompurify": "^3.5.1",

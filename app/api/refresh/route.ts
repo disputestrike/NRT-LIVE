@@ -63,7 +63,7 @@ export async function GET() {
       nextCrawl: new Date(now.getTime() + 15*60*1000).toISOString(),
       status: "pending_db",
       feeds: 10,
-      note: "Connect DATABASE_URL and ANTHROPIC_API_KEY to activate live crawling",
+      note: "Connect DATABASE_URL and CEREBRAS_API_KEY to activate live crawling",
     },
   });
 }

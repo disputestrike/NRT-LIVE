@@ -107,7 +107,7 @@ function detectCategory(title: string, cats?: string[], defaultCat = "nigeria"):
 }
 
 // ── AI REWRITE WITH CLAUDE HAIKU ─────────────────────────────────
-export async function rewriteWithAI(raw: RawStory, apiKey: string): Promise<{
+export async function rewriteWithAI(raw: RawStory, apiKey: string) /* Cerebras llama3.1-70b */: Promise<{
   headline: string; snippet: string; body: string;
   category: string; confidence: "Verified" | "Developing";
 } | null> {
@@ -130,14 +130,14 @@ Output ONLY valid JSON (no markdown):
   "confidence": "Verified if reputable source, Developing if single source"
 }`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.cerebras.ai/v1/chat/completions", {
       method:"POST",
-      headers:{ "Content-Type":"application/json", "x-api-key":apiKey, "anthropic-version":"2023-06-01" },
-      body:JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:1200, messages:[{ role:"user", content:prompt }] })
+      headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${apiKey}` },
+      body:JSON.stringify({ model:"llama3.1-70b", max_tokens:1200, messages:[{ role:"system", content:"You are a senior journalist at NRT Nigeria Real Time." },{ role:"user", content:prompt }] })
     });
     if (!res.ok) return null;
     const data = await res.json();
-    const text = (data.content?.[0]?.text || "").replace(/```json|```/g,"").trim();
+    const text = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g,"").trim();
     return JSON.parse(text);
   } catch { return null; }
 }

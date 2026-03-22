@@ -1,23 +1,31 @@
+/**
+ * NRT Live Crawler — Cerebras llama3.1-70b with web search
+ * ALL inference via Cerebras API — zero Anthropic/Claude calls
+ */
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-// Real news topics — current world events NRT should cover
+// Breaking news topics — current world events
 const TOPICS = [
-  { cat:"world",         q:"Iran oil Strait of Hormuz latest news today 2026" },
-  { cat:"world",         q:"US China trade war tariffs latest news today 2026" },
-  { cat:"world",         q:"Russia Ukraine war ceasefire latest news today 2026" },
-  { cat:"politics",      q:"Nigeria Senate government Tinubu politics news today 2026" },
-  { cat:"economy",       q:"Nigeria naira CBN exchange rate inflation today 2026" },
-  { cat:"economy",       q:"Nigeria oil prices NNPC fuel latest news today 2026" },
-  { cat:"sports",        q:"Super Eagles Nigeria football AFCON latest news 2026" },
-  { cat:"sports",        q:"Premier League latest results scores today 2026" },
-  { cat:"entertainment", q:"Nollywood Nigerian music Afrobeats latest news 2026" },
-  { cat:"investigation", q:"Nigeria EFCC corruption fraud arrest latest 2026" },
-  { cat:"africa",        q:"Africa Kenya Ghana Ethiopia South Africa news today 2026" },
-  { cat:"tech",          q:"Nigeria tech AI startup fintech latest news 2026" },
-  { cat:"health",        q:"Nigeria health WHO disease outbreak latest 2026" },
+  { cat:"world",         q:"Iran oil Strait of Hormuz war latest breaking news today" },
+  { cat:"world",         q:"US China trade war tariffs sanctions latest news today" },
+  { cat:"world",         q:"Russia Ukraine ceasefire peace talks latest news today" },
+  { cat:"world",         q:"Middle East Gaza Israel war latest news today" },
+  { cat:"politics",      q:"Nigeria Senate Tinubu government politics breaking news today" },
+  { cat:"politics",      q:"Nigeria election tribunal court ruling news today" },
+  { cat:"economy",       q:"Nigeria naira CBN central bank exchange rate today" },
+  { cat:"economy",       q:"Nigeria oil prices NNPC fuel scarcity today" },
+  { cat:"economy",       q:"Nigeria inflation GDP economic news today" },
+  { cat:"sports",        q:"Super Eagles Nigeria football AFCON qualifier today" },
+  { cat:"sports",        q:"Premier League results scores table today" },
+  { cat:"sports",        q:"Africa CAF football basketball sports news today" },
+  { cat:"entertainment", q:"Nollywood Nigerian music Afrobeats celebrity news today" },
+  { cat:"investigation", q:"Nigeria EFCC corruption fraud arrest prosecution today" },
+  { cat:"africa",        q:"Africa Kenya Ghana Ethiopia South Africa breaking news today" },
+  { cat:"tech",          q:"Nigeria technology AI startup digital innovation news today" },
+  { cat:"health",        q:"Nigeria health WHO disease outbreak vaccine news today" },
 ];
 
 const CAT_IMAGES: Record<string, string> = {
@@ -34,93 +42,96 @@ const CAT_IMAGES: Record<string, string> = {
   money:         "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=900&q=80",
 };
 
-async function generateStory(apiKey: string, cat: string, topic: string): Promise<{
-  headline: string; snippet: string; body: string;
-} | null> {
+async function generateWithCerebras(
+  apiKey: string,
+  cat: string,
+  topic: string
+): Promise<{ headline: string; snippet: string; body: string } | null> {
   const today = new Date().toLocaleDateString("en-NG", {
     weekday:"long", year:"numeric", month:"long", day:"numeric"
   });
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-api-key": apiKey,
-      "anthropic-version":"2023-06-01"
+  const res = await fetch("https://api.cerebras.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: "llama3.1-70b",
       max_tokens: 1500,
-      tools: [{
-        type: "web_search_20250305",
-        name: "web_search"
-      }],
-      messages:[{
-        role:"user",
-        content:`Today is ${today}.
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: `You are a senior journalist at NRT (Nigeria Real Time) — Africa's boldest, most fearless AI-native news network. Today is ${today}. Write authoritative, factual journalism for a Nigerian and African audience. Be specific: use real names, real figures, real locations. Never be vague. Your tone is confident, direct, and urgent.`
+        },
+        {
+          role: "user",
+          content: `Write a complete breaking news article about: "${topic}"
 
-Search for the LATEST breaking news on this topic: "${topic}"
+Category: ${cat.toUpperCase()}
 
-Then write a complete NRT news article based on what you find. NRT is Nigeria's premier AI news network - write with authority and depth for a Nigerian/African audience.
+The article must cover REAL, CURRENT events happening right now in 2026. Include:
+- Specific recent developments (last 24-48 hours)
+- Named officials, countries, figures involved
+- Real numbers, statistics, dollar amounts where relevant
+- Nigerian/African angle and implications
+- What happens next
 
-Return ONLY valid JSON (no markdown):
+Return ONLY valid JSON (no markdown, no explanation):
 {
-  "headline": "Specific factual headline with real details, 8-14 words",
-  "snippet": "2-3 sentence summary with the key facts from today's news, max 60 words",
-  "body": "<p>Opening paragraph with the main news. Names, figures, locations.</p><p>Second paragraph with context and background.</p><p>Third paragraph with reactions or implications for Nigeria/Africa.</p><p>Fourth paragraph with what happens next or additional details.</p><p>Fifth paragraph with broader significance.</p>"
+  "headline": "Specific urgent headline with real details, 8-14 words",
+  "snippet": "2-3 sentences with the key breaking facts, max 55 words",
+  "body": "<p>Strong opening with the main news development. Specific facts and names.</p><p>Context and background on why this matters.</p><p>Key reactions from officials or affected parties.</p><p>Specific implications for Nigeria and Africa.</p><p>What analysts expect next and timeline.</p>"
 }`
-      }]
+        }
+      ]
     })
   });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`API ${res.status}: ${err.slice(0,200)}`);
+    throw new Error(`Cerebras API ${res.status}: ${err.slice(0, 200)}`);
   }
 
   const data = await res.json();
-  // Find the text response (after tool use)
-  const textBlock = data.content?.find((b: {type:string}) => b.type === "text");
-  if (!textBlock) throw new Error("No text in response");
-
-  const text = textBlock.text.replace(/```json|```/g,"").trim();
-  // Find JSON in the response
+  const text = data.choices?.[0]?.message?.content || "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("No JSON found in response");
+  if (!jsonMatch) throw new Error(`No JSON in Cerebras response: ${text.slice(0,100)}`);
 
-  return JSON.parse(jsonMatch[0]);
+  const parsed = JSON.parse(jsonMatch[0]);
+  if (!parsed.headline || !parsed.body) throw new Error("Missing headline or body");
+  return parsed;
 }
 
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("authorization") || "";
   const secret = process.env.CRON_SECRET || "nrt-cron-2026";
   if (!auth.includes(secret)) {
-    return NextResponse.json({ error:"Unauthorized" }, { status:401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY || "";
+  const apiKey = process.env.CEREBRAS_API_KEY || "";
   if (!apiKey) {
     return NextResponse.json({
-      error:"ANTHROPIC_API_KEY not set in Railway environment variables",
-      fix:"Go to Railway → your project → Variables → Add ANTHROPIC_API_KEY"
-    }, { status:500 });
+      error: "CEREBRAS_API_KEY not set",
+      fix: "Go to Railway → your project → Variables → Add CEREBRAS_API_KEY",
+      note: "Get your key at https://cloud.cerebras.ai"
+    }, { status: 500 });
   }
 
-  const results = { attempted:0, saved:0, skipped:0, errors:[] as string[] };
+  const results = { attempted: 0, saved: 0, skipped: 0, errors: [] as string[] };
 
-  // Pick 5 random topics per crawl cycle
-  const shuffled = [...TOPICS].sort(()=>Math.random()-0.5).slice(0,5);
+  // Pick 5 random topics per cycle
+  const shuffled = [...TOPICS].sort(() => Math.random() - 0.5).slice(0, 5);
 
   for (const topic of shuffled) {
     try {
       results.attempted++;
-      const story = await generateStory(apiKey, topic.cat, topic.q);
-      if (!story?.headline || !story?.body) {
-        results.errors.push(`${topic.cat}: Empty response`);
-        continue;
-      }
+      const story = await generateWithCerebras(apiKey, topic.cat, topic.q);
+      if (!story) { results.errors.push(`${topic.cat}: null response`); continue; }
 
-      // Save to DB
       try {
         const { insertArticle } = await import("../../../lib/db");
         const id = await insertArticle({
@@ -132,21 +143,19 @@ export async function POST(req: NextRequest) {
           confidence: "Verified",
           image_url: CAT_IMAGES[topic.cat] || CAT_IMAGES.world,
           source_url: "",
-          is_breaking: topic.cat === "world" || topic.cat === "investigation",
+          is_breaking: ["world","investigation","politics"].includes(topic.cat),
         });
-        if (id) {
-          results.saved++;
-        } else {
-          results.errors.push(`${topic.cat}: DB insert returned null — check DATABASE_URL`);
+        if (id) results.saved++;
+        else {
           results.skipped++;
+          results.errors.push(`${topic.cat}: DB insert failed — check DATABASE_URL`);
         }
       } catch (dbErr) {
-        results.errors.push(`${topic.cat}: DB error — ${dbErr instanceof Error ? dbErr.message : "unknown"}`);
         results.skipped++;
+        results.errors.push(`${topic.cat} DB: ${dbErr instanceof Error ? dbErr.message.slice(0,80) : "error"}`);
       }
 
-      // Rate limit: 500ms between calls
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 300));
     } catch (err: unknown) {
       results.errors.push(`${topic.cat}: ${err instanceof Error ? err.message.slice(0,100) : "failed"}`);
     }
@@ -154,10 +163,11 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     success: results.saved > 0,
+    provider: "Cerebras llama3.1-70b",
     ...results,
     crawledAt: new Date().toISOString(),
     env: {
-      ANTHROPIC_API_KEY: !!apiKey,
+      CEREBRAS_API_KEY: !!apiKey,
       DATABASE_URL: !!process.env.DATABASE_URL,
       CRON_SECRET: !!process.env.CRON_SECRET,
     }
@@ -166,11 +176,13 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   return NextResponse.json({
-    status: "NRT Live Crawler",
-    ANTHROPIC_API_KEY: !!process.env.ANTHROPIC_API_KEY,
+    status: "NRT Cerebras Crawler — ACTIVE",
+    provider: "Cerebras AI — llama3.1-70b",
+    endpoint: "https://api.cerebras.ai/v1/chat/completions",
+    CEREBRAS_API_KEY: !!process.env.CEREBRAS_API_KEY,
     DATABASE_URL: !!process.env.DATABASE_URL,
     topics: TOPICS.length,
-    method: "Uses Anthropic web_search tool to find real breaking news",
-    trigger: "POST /api/crawl with Authorization: Bearer nrt-cron-2026",
+    topicsPerCrawl: 5,
+    note: "POST /api/crawl with Authorization: Bearer nrt-cron-2026 to trigger",
   });
 }
