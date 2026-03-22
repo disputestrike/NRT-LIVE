@@ -22,13 +22,15 @@ export default function CategoryPage() {
   const [leak, setLeak] = useState(false);
 
   const articles = useMemo(() => {
+    // Direct slug match first
     const direct = bySlug(slug);
     if (direct.length > 0) return direct;
-    // Fallback: soft match
-    const soft = STORIES.filter(s =>
-      s.category.toLowerCase().includes(slug) ||
-      (slug === "nigeria" && ["politics","investigation","nigeria","health"].includes(s.categorySlug))
-    );
+    // Special cases
+    if (slug === "world") return STORIES.filter(s => ["world","africa"].includes(s.categorySlug));
+    if (slug === "business") return STORIES.filter(s => s.categorySlug === "economy");
+    if (slug === "live") return STORIES.slice(0, 12);
+    // Soft match
+    const soft = STORIES.filter(s => s.category.toLowerCase().includes(slug));
     return soft.length > 0 ? soft : STORIES.slice(0, 9);
   }, [slug]);
 

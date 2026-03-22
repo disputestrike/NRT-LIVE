@@ -378,6 +378,84 @@ export const STORIES: Story[] = [
 <p>Youth unemployment — which many economists consider the most critical structural challenge facing South Africa — remained stubbornly elevated at 54.8% using the expanded definition that includes discouraged workers. The figure was essentially unchanged from the previous quarter, underscoring the difficulty of reaching the youngest cohort of jobseekers who often lack formal qualifications and work experience.</p>`,
     related:["af1","af2","e4"]
   },
+
+  // ── WORLD (3 stories) ────────────────────────────────────────
+  {
+    id:"w1", category:"World", categorySlug:"world",
+    headline:"US-China Trade War Escalates as Beijing Slaps 34% Tariffs on American Imports",
+    snippet:"China announced sweeping retaliatory tariffs on $280 billion of American goods as the trade war between the world's two largest economies intensifies.",
+    time:"1 hr ago", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=900&q=80",
+    body:`<p>China's Ministry of Commerce announced sweeping retaliatory tariffs of 34% on $280 billion worth of American imports on Thursday, escalating the trade confrontation between the world's two largest economies to a level not seen since the first Trump administration and sending global markets into sharp decline.</p><p>The announcement came within hours of President Trump signing an executive order imposing 25% tariffs on all Chinese semiconductor and electronic goods entering the United States, in what the White House described as a necessary step to protect American technological competitiveness. Beijing's response, considerably broader in scope than analysts had anticipated, targeted American agricultural products, aerospace equipment, financial services and energy exports.</p><p>The escalation sent Wall Street into freefall, with the Dow Jones Industrial Average falling 847 points in the first 90 minutes of trading. Asian markets had already closed down sharply on news of the US tariff announcement, with the Shanghai Composite falling 4.1% and Hong Kong's Hang Seng index dropping 5.3% — its largest single-day decline in 18 months.</p>`,
+    related:["w2","w3","af1"]
+  },
+  {
+    id:"w2", category:"World", categorySlug:"world",
+    headline:"Ukraine Ceasefire Talks Collapse as Russia Advances on Kharkiv",
+    snippet:"US-brokered ceasefire negotiations broke down after Russia launched a major offensive on Kharkiv, drawing accusations from Kyiv of bad-faith diplomacy.",
+    time:"2 hrs ago", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=900&q=80",
+    body:`<p>US-brokered ceasefire negotiations between Russia and Ukraine collapsed dramatically on Thursday after Russian forces launched a major new offensive push on the Kharkiv region, with Ukrainian officials accusing Moscow of using the diplomatic process as cover to regroup and rearm for a new phase of the conflict.</p><p>The talks, which had been mediated by US Secretary of State Marco Rubio and had generated cautious optimism in European capitals over the past two weeks, were suspended by Ukraine's delegation after satellite imagery confirmed that Russian forces had advanced approximately 8 kilometres into contested territory in the Kharkiv Oblast during the period of nominal ceasefire discussions.</p><p>President Zelensky, speaking at an emergency press conference in Kyiv, described Russia's behaviour as "a cynical and deliberate deception of the international community" and called on European allies to immediately approve the next tranche of military assistance that had been pending parliamentary ratification in several EU member states.</p>`,
+    related:["w1","w3","af2"]
+  },
+  {
+    id:"w3", category:"World", categorySlug:"world",
+    headline:"Global AI Regulation Treaty: 47 Nations Sign Landmark Safety Framework in Geneva",
+    snippet:"The Geneva AI Safety Accord, signed by 47 countries including the US, EU members, China and Nigeria, establishes the first legally binding international standards for advanced AI systems.",
+    time:"4 hrs ago", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80",
+    body:`<p>Representatives of 47 nations gathered at the Palais des Nations in Geneva on Thursday to sign the Geneva AI Safety Accord — the first legally binding international framework for the development and deployment of advanced artificial intelligence systems — in a diplomatic achievement that AI governance experts described as a watershed moment comparable in significance to the early arms control treaties of the Cold War era.</p><p>The accord, which was three years in negotiation, establishes mandatory safety testing requirements for any AI system with capabilities above a defined threshold before it can be commercially deployed, creates an international AI Safety Board with inspection powers modelled on the International Atomic Energy Agency, and requires signatory nations to share information about AI-related incidents and near-misses through a confidential reporting system.</p><p>Nigeria's Minister of Communications and Digital Economy signed on behalf of the federal government, making Nigeria the first African nation to commit to the accord's full provisions. Several other African nations signed as observers, indicating intent to accede to the full framework within 18 months.</p>`,
+    related:["w1","t1","af2"]
+  },
+
+  // ── HEALTH (2 stories) ───────────────────────────────────────
+  {
+    id:"h1", category:"Health", categorySlug:"health",
+    headline:"WHO Declares End of Sudan Cholera Emergency — 18 Months After Outbreak Began",
+    snippet:"The World Health Organization formally ended the cholera emergency in Sudan after case counts fell below the epidemic threshold for 42 consecutive days.",
+    time:"3 hrs ago", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=80",
+    body:`<p>The World Health Organization formally declared an end to the cholera emergency in Sudan on Thursday, after case counts across the country fell below the epidemic threshold for 42 consecutive days — a milestone that health officials credited to a massive vaccination campaign that reached 4.2 million people in six months, improved water treatment infrastructure in displaced persons camps, and a significant reduction in conflict-related population displacement in the most severely affected regions.</p><p>The outbreak, which began in September 2024, ultimately killed 2,847 people and infected more than 180,000, making it the worst cholera outbreak in East Africa since the 2017 crisis in Yemen. At its peak, health workers were recording more than 1,200 new cases per day across 12 of Sudan's 18 states.</p><p>WHO Director-General Dr. Tedros Adhanom Ghebreyesus said the outcome demonstrated what was achievable when political will, international funding and community engagement were combined effectively, but warned that the underlying conditions that enabled the outbreak — lack of clean water infrastructure, collapsed health system, ongoing conflict — remained largely unchanged and that vigilance was essential.</p>`,
+    related:["n2","af1","w2"]
+  },
+  {
+    id:"h2", category:"Health", categorySlug:"health",
+    headline:"Nigeria Approves First Locally Manufactured Malaria Vaccine for Nationwide Rollout",
+    snippet:"The National Agency for Food and Drug Administration has approved a malaria vaccine produced entirely in Nigeria, reducing dependence on imported immunisations.",
+    time:"5 hrs ago", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1559757175-7cb15e7bcce9?w=900&q=80",
+    body:`<p>Nigeria's National Agency for Food and Drug Administration and Control granted full marketing authorisation on Thursday to MalariaShield-NG, the first malaria vaccine to be manufactured entirely within Nigeria — a development that health officials described as a landmark moment for the country's pharmaceutical sovereignty and one that could significantly reduce the cost of childhood immunisation across West Africa.</p><p>The vaccine, developed over seven years by a consortium led by the Institute of Human Virology Nigeria in partnership with researchers at the University of Lagos College of Medicine, uses a modified protein subunit technology that Nigerian scientists adapted from existing approved malaria vaccine platforms to achieve stability in high-temperature storage conditions — a critical requirement for a country where cold chain infrastructure remains unreliable in many states.</p><p>NAFDAC Director-General Professor Mojisola Adeyeye said the approval represented "the most significant milestone in Nigerian pharmaceutical history since the establishment of NAFDAC itself" and confirmed that the federal government had already committed to procuring 15 million doses for the first phase of nationwide rollout, targeting children aged 6 months to 5 years in the 10 states with the highest malaria burden.</p>`,
+    related:["n2","h1","n3"]
+  },
+
+  // ── OPINION (3 stories) ──────────────────────────────────────
+  {
+    id:"op1", category:"Opinion", categorySlug:"opinion",
+    headline:"The Media Bill Is a Warning Shot — Civil Society Must Respond Now",
+    snippet:"If Nigerians allow this legislation to pass unchallenged, the next target will not be AI-generated content. It will be the investigative journalists who hold power to account.",
+    time:"Today", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&q=80",
+    body:`<p>Let us be precise about what the Digital Media Regulation Act actually does, because the government's supporters have been notably imprecise in their characterisations. This legislation does not merely require AI-generated content to be labelled — a provision that few reasonable people would object to. It creates a government-controlled body with the power to suspend any digital news platform in Nigeria without a court order and without a right to immediate appeal.</p><p>That is not regulation. That is a kill switch. And the history of Nigerian governments — civilian and military alike — tells us exactly what kind of journalism tends to get "suspended" when the executive branch acquires such powers. Hint: it is not the journalism that praises the government.</p><p>Civil society organisations, press freedom groups, lawyers and ordinary Nigerians who care about the quality of their democracy have a narrow window to act. The bill is on the president's desk. A sustained, coordinated, visible campaign of public pressure — combined with a credible legal challenge already being prepared by the Nigerian Bar Association — can still change the outcome.</p><p>The moment to act is now, not after the president signs. History is full of democracies that allowed the erosion of press freedom in small steps, each one individually justifiable, each one contributing to a larger destruction. We should not become another cautionary tale.</p>`,
+    related:["p1","i1","p2"]
+  },
+  {
+    id:"op2", category:"Opinion", categorySlug:"opinion",
+    headline:"CBN Cannot Hike Its Way Out of a Supply-Side Inflation Crisis",
+    snippet:"Raising interest rates is the correct tool for demand-driven inflation. Nigeria's price crisis is largely supply-driven. The medicine being administered may be worse than the disease.",
+    time:"Today", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80",
+    body:`<p>The CBN's decision to raise the benchmark lending rate to 27.5% — the third consecutive hike in a tightening cycle that has now added 450 basis points to the cost of borrowing in under 12 months — is based on a correct diagnosis of the symptom (high inflation) but a mistaken diagnosis of the underlying disease.</p><p>Standard monetary theory teaches that interest rate increases reduce inflation by cooling demand. When households and businesses find credit too expensive, they spend less, aggregate demand falls, and prices moderate. This mechanism works effectively when inflation is demand-pull — that is, when prices are rising because too much money is chasing too few goods.</p><p>Nigeria's current inflation is not primarily demand-pull. The data are clear on this. Food inflation is running at over 40% not because Nigerians are eating extravagantly, but because the naira's collapse has made imported food vastly more expensive, because fuel price increases have raised the cost of transporting food from farms to markets, and because Nigeria's food production and distribution infrastructure remains chronically underdeveloped. These are supply-side problems. Higher interest rates do not fix supply-side problems. They make them worse, by making it more expensive for farmers to borrow for equipment and inputs, and more expensive for distributors to finance their working capital.</p><p>The CBN is not wrong to be concerned about inflation. But the prescription must fit the diagnosis. What Nigeria needs is not tighter money — it is better infrastructure, more diversified export earnings, and a more competitive agricultural sector. Those are harder to achieve than a rate decision. But they are what will actually work.</p>`,
+    related:["e1","e2","m1"]
+  },
+  {
+    id:"op3", category:"Opinion", categorySlug:"opinion",
+    headline:"Africa's Space Age Has Begun — and Nigeria Is Watching From the Sidelines",
+    snippet:"While Ethiopia launches its first domestic satellite and Kenya activates continental free trade, Nigeria's vast potential continues to be squandered by short-term political thinking.",
+    time:"Today", confidence:"Verified" as const,
+    image:"https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&q=80",
+    body:`<p>Ethiopia launched a satellite into orbit on Thursday. Built entirely by Ethiopians, in Ethiopia, without the hand-holding of European or Chinese technical partners that has characterised every other African space programme to date. It is a genuinely extraordinary achievement, and it should prompt every Nigerian policymaker to ask themselves a very uncomfortable question: what happened to us?</p><p>Nigeria had a National Space Research and Development Agency before Ethiopia had a functioning federal government. We launched our first satellite — NigeriaSat-1 — in 2003, a full two decades before Addis Ababa put hardware in orbit. We have the engineers, the universities, the technical talent. We have oil revenues that Ethiopia can only dream of. And yet here we are, watching a country that was synonymous with famine in the 1980s lead the continent into the space age.</p><p>The answer, as with so many of Nigeria's failures, lies in the gap between ambition and follow-through. NASRDA has been consistently underfunded, subject to leadership changes at every change of government, and unable to retain the engineers it trains because it cannot compete with private sector salaries. These are not inevitable problems. They are choices — the accumulated result of successive governments treating science and technology as optional extras rather than strategic imperatives.</p><p>Kenya's simultaneous signing of the AfCFTA implementation bill compounds the embarrassment. While Nigeria debates media regulation bills and fuel price protests, our neighbours are quietly positioning themselves as the continent's gateway to a 1.4 billion-person free trade area. If Nigeria does not change course — not rhetorically but in budget allocations, in policy decisions, in the quality of leadership appointed to critical agencies — the continent will move forward without us.</p>`,
+    related:["af1","af2","t1"]
+  },
 ];
 
 export const getCatColor = (cat: string): string => {
@@ -404,4 +482,7 @@ export const S = {
   money:         STORIES.filter(s => s.categorySlug === "money"),
   tech:          STORIES.filter(s => s.categorySlug === "tech"),
   africa:        STORIES.filter(s => s.categorySlug === "africa"),
+  world:         STORIES.filter(s => s.categorySlug === "world"),
+  health:        STORIES.filter(s => s.categorySlug === "health"),
+  opinion:       STORIES.filter(s => s.categorySlug === "opinion"),
 };

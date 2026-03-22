@@ -47,7 +47,7 @@ export default function StoryModal({ story, onClose, onStory }: {
               </div>
 
               <div style={{ borderRadius:10, overflow:"hidden", marginBottom:18, aspectRatio:"16/9", position:"relative" }}>
-                <Image src={story.image} alt={story.headline} fill style={{ objectFit:"cover" }} sizes="600px" />
+                <Image src={story.image} alt={story.headline} fill style={{ objectFit:"cover" }} sizes="600px" onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${story.id}/600/338`;}} />
               </div>
 
               <div className="art-body" dangerouslySetInnerHTML={{ __html: story.body }} />

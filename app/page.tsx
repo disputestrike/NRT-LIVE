@@ -27,7 +27,8 @@ function NC({ s, os, size="sm" }: { s:Story; os:(x:Story)=>void; size?:"sm"|"md"
     <div className="nc fade-up" onClick={() => os(s)}>
       <div className="nc-img-wrap">
         <Image src={s.image} alt={s.headline} width={480} height={270}
-          style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }} />
+          style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }}
+          onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/480/270`;}} />
         <span className="nc-cat-pill" style={{ color:c }}>{s.category}</span>
       </div>
       <div className="nc-body">
@@ -67,12 +68,6 @@ const MARKET = [
   { l:"Crude Oil",v:"$74.40", c:"▲ 0.6%", up:true },
   { l:"Gold",    v:"$2,341", c:"▲ 0.3%", up:true },
 ];
-const TRENDS = [
-  { t:"#MediaBill", n:"48.2K" }, { t:"#SuperEagles", n:"31.7K" },
-  { t:"#Naira", n:"27.4K" },     { t:"#Osimhen", n:"22.1K" },
-  { t:"#EFCC", n:"18.9K" },      { t:"#DavidoTour", n:"15.3K" },
-  { t:"#CBNRateHike", n:"12.1K"}, { t:"#Nollywood", n:"9.8K" },
-];
 const POD_EPS = [
   { title:"Today's 7AM Briefing — Top 8 Stories", dur:"5:02" },
   { title:"Naira Crisis Deep Dive with Economists", dur:"8:14" },
@@ -108,7 +103,7 @@ export default function Home() {
   const heroSide = [S.economy[1], S.sports[1], S.nigeria[1], S.entertainment[0]];
 
   return (
-    <div style={{ background:"var(--gray-bg)", minHeight:"100vh", width:"100%", maxWidth:"100vw", overflowX:"hidden" }}>
+    <div style={{ background:"var(--gray-bg)", minHeight:"100vh", width:"100%" }}>
       <div className="sticky-header">
         <Ticker />
         <Navbar onLeak={() => setLeak(true)} />
@@ -126,8 +121,14 @@ export default function Home() {
       <div className="trending-bar">
         <span className="tb-label">Trending</span>
         <div className="tb-items">
-          {["#MediaBill","Super Eagles","Naira Crisis","Osimhen","EFCC Arrests","Davido Tour","CBN Rate Hike","Nollywood Record","Kaduna Tribunal","Tyla Grammy","Efe Ajagba","AfCFTA"].map(t => (
-            <span key={t} className="tb-item">{t}</span>
+          {[
+            ["#MediaBill","/politics"],["Super Eagles","/sports"],["Naira Crisis","/economy"],
+            ["Osimhen","/sports"],["EFCC Arrests","/investigation"],["Davido Tour","/entertainment"],
+            ["CBN Rate Hike","/economy"],["Nollywood Record","/entertainment"],
+            ["Kaduna Tribunal","/politics"],["Tyla Grammy","/entertainment"],
+            ["Efe Ajagba","/sports"],["AfCFTA","/africa"]
+          ].map(([t,href]) => (
+            <Link key={t} href={href} className="tb-item" style={{ textDecoration:"none" }}>{t}</Link>
           ))}
         </div>
       </div>
@@ -323,6 +324,50 @@ export default function Home() {
               </div>
             </div>
 
+
+
+            {/* OPINION & ANALYSIS — fills blank space */}
+            <SH title="Opinion & Analysis" color="#7C3AED" href="/opinion" />
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
+              <div className="nc fade-up" onClick={() => setStory(S.politics[0])}>
+                <div style={{ background:"linear-gradient(135deg,#1a0a2e,#3d1a6e)", aspectRatio:"16/9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:40 }}>✍️</div>
+                <div className="nc-body">
+                  <div className="nc-cat" style={{ color:"#7C3AED" }}>Opinion · Politics</div>
+                  <div className="nc-hl">The Media Bill Is a Warning Shot — Civil Society Must Respond Now</div>
+                  <div className="nc-snippet">If Nigerians allow this legislation to pass unchallenged, the next target will not be AI-generated content. It will be the investigative reporters who hold power to account.</div>
+                  <div className="nc-meta"><span>NRT Editorial</span><span>·</span><span>Today</span></div>
+                </div>
+              </div>
+              <div className="nc fade-up" onClick={() => setStory(S.economy[0])}>
+                <div style={{ background:"linear-gradient(135deg,#0a1a0e,#1a4a20)", aspectRatio:"16/9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:40 }}>📊</div>
+                <div className="nc-body">
+                  <div className="nc-cat" style={{ color:"#007A3D" }}>Opinion · Economy</div>
+                  <div className="nc-hl">CBN Cannot Hike Its Way Out of a Supply-Side Crisis</div>
+                  <div className="nc-snippet">Raising interest rates is the right tool for demand-driven inflation. Nigeria&apos;s inflation is largely cost-push. The medicine may be worse than the disease.</div>
+                  <div className="nc-meta"><span>Dr. Emeka Okafor, Economist</span><span>·</span><span>Today</span></div>
+                </div>
+              </div>
+              <div className="nc fade-up" onClick={() => setStory(S.africa[0])}>
+                <div style={{ background:"linear-gradient(135deg,#1a0e0a,#4a2010)", aspectRatio:"16/9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:40 }}>🌍</div>
+                <div className="nc-body">
+                  <div className="nc-cat" style={{ color:"#D97706" }}>Opinion · Africa</div>
+                  <div className="nc-hl">Kenya&apos;s AfCFTA Moment Shows What Political Will Can Achieve</div>
+                  <div className="nc-snippet">While Nigeria debates media bills, Kenya quietly became East Africa&apos;s gateway to a 1.4 billion-person market. The lesson for Abuja is obvious.</div>
+                  <div className="nc-meta"><span>Amina Garba, Trade Analyst</span><span>·</span><span>Today</span></div>
+                </div>
+              </div>
+            </div>
+
+            {/* FROM THE EDITOR */}
+            <div style={{ background:"white", border:"1px solid var(--border)", borderLeft:"5px solid var(--orange)", borderRadius:"0 8px 8px 0", padding:"24px 28px", margin:"8px 0 0" }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.5px", textTransform:"uppercase", color:"var(--orange)", marginBottom:8, fontFamily:"'Inter',sans-serif" }}>From the Editor</div>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:20, fontWeight:800, color:"#000", marginBottom:12, lineHeight:1.2 }}>Welcome to NRT — Nigeria&apos;s First AI-Native 24/7 News Network</div>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:16, color:"#222", lineHeight:1.7, marginBottom:16 }}>
+                NRT was built on a simple belief: Nigerians deserve news that is fast, accurate, fearless and free. Every story on this platform passes through our AI validation system before publication. Every source is cited. Every correction is published openly. We hold power to account — and we hold ourselves to the same standard.
+              </div>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:14, color:"#666" }}>— The NRT Editorial Team, Lagos · March 2026</div>
+            </div>
+
             {/* MORE STORIES — mixed 4-col */}
             <SH title="More Stories" />
             <div className="card-grid-4" style={{ minWidth:0, width:"100%" }}>
@@ -380,12 +425,21 @@ export default function Home() {
             <div className="widget">
               <div className="widget-hdr"><div className="widget-bar" /><div className="widget-title">Trending Now</div></div>
               <div className="widget-body">
-                {TRENDS.map((t,i) => (
-                  <div key={t.t} className="trend-row">
+                {[
+                  { t:"#MediaBill",   n:"48.2K", href:"/politics" },
+                  { t:"#SuperEagles", n:"31.7K", href:"/sports" },
+                  { t:"#Naira",       n:"27.4K", href:"/economy" },
+                  { t:"#Osimhen",     n:"22.1K", href:"/sports" },
+                  { t:"#EFCC",        n:"18.9K", href:"/investigation" },
+                  { t:"#DavidoTour",  n:"15.3K", href:"/entertainment" },
+                  { t:"#CBNRateHike", n:"12.1K", href:"/economy" },
+                  { t:"#Nollywood",   n:"9.8K",  href:"/entertainment" },
+                ].map((t,i) => (
+                  <Link key={t.t} href={t.href} className="trend-row" style={{ textDecoration:"none" }}>
                     <span className="tr-rank">{i+1}</span>
                     <span className="tr-label">{t.t}</span>
                     <span className="tr-count">{t.n}</span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -482,15 +536,15 @@ export default function Home() {
               </div>
             </div>
             {[
-              { t:"Nigeria",   l:["Politics","Lagos","Abuja","South-South","North","Economy"] },
-              { t:"Sports",    l:["Super Eagles","Premier League","AFCON","NBA","Athletics","CAF"] },
-              { t:"Business",  l:["Markets","Fintech","Oil & Gas","Agriculture","Startups","Crypto"] },
-              { t:"Lifestyle", l:["Entertainment","Nollywood","Music","Travel","Fashion","Food"] },
-              { t:"Company",   l:["About NRT","Editorial","AI Policy","Advertise","Careers","Contact"] },
+              { t:"Nigeria",   l:[["Politics","/politics"],["Lagos","/nigeria"],["Abuja","/nigeria"],["Economy","/economy"],["South-South","/nigeria"],["North","/nigeria"]] },
+              { t:"Sports",    l:[["Super Eagles","/sports"],["Premier League","/sports"],["AFCON","/sports"],["NBA","/sports"],["Athletics","/sports"],["CAF","/sports"]] },
+              { t:"Business",  l:[["Markets","/economy"],["Fintech","/money"],["Oil & Gas","/economy"],["Agriculture","/economy"],["Startups","/tech"],["Crypto","/money"]] },
+              { t:"Lifestyle", l:[["Entertainment","/entertainment"],["Nollywood","/entertainment"],["Music","/entertainment"],["Travel","/world"],["Opinion","/opinion"],["Health","/health"]] },
+              { t:"Company",   l:[["About NRT","#about"],["Editorial","#editorial"],["AI Policy","#ai-policy"],["Advertise","#advertise"],["Careers","#careers"],["Contact","#contact"]] },
             ].map(col => (
               <div key={col.t} className="footer-col">
                 <h4>{col.t}</h4>
-                {col.l.map(l => <a key={l}>{l}</a>)}
+                {col.l.map(([label,href]) => <Link key={label} href={href} className="footer-link">{label}</Link>)}
               </div>
             ))}
           </div>

@@ -3,10 +3,17 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const LINKS = [
-  { l:"Live", slug:"/" },{ l:"Nigeria", slug:"/nigeria" },{ l:"Africa", slug:"/africa" },
-  { l:"Sports", slug:"/sports" },{ l:"Business", slug:"/economy" },
-  { l:"Entertainment", slug:"/entertainment" },{ l:"Money", slug:"/money" },
-  { l:"Tech", slug:"/tech" },{ l:"World", slug:"/world" },{ l:"Opinion", slug:"/opinion" },
+  { l:"Live",          slug:"/" },
+  { l:"Nigeria",       slug:"/nigeria" },
+  { l:"Africa",        slug:"/africa" },
+  { l:"Sports",        slug:"/sports" },
+  { l:"Business",      slug:"/economy" },
+  { l:"Entertainment", slug:"/entertainment" },
+  { l:"Money",         slug:"/money" },
+  { l:"Tech",          slug:"/tech" },
+  { l:"World",         slug:"/world" },
+  { l:"Health",        slug:"/health" },
+  { l:"Opinion",       slug:"/opinion" },
 ];
 
 export default function Navbar({ onLeak }: { onLeak: () => void }) {
