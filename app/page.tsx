@@ -514,6 +514,275 @@ export default function Home() {
               <button style={{ width:"100%", background:"white", color:"var(--orange)", border:"none", fontSize:12, fontWeight:700, letterSpacing:1, textTransform:"uppercase", padding:"9px", borderRadius:8, cursor:"pointer" }}>Subscribe Free</button>
             </div>
 
+            {/* ── OPINION PICKS ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion & Analysis</div></div>
+              <div className="widget-body">
+                {[S.opinion[0], S.opinion[1], S.opinion[2]].map(s => (
+                  <div key={s.id} className="lc" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                    <div className="lc-body">
+                      <div className="lc-cat" style={{ color:"#7C3AED" }}>{s.category}</div>
+                      <div className="lc-hl">{s.headline}</div>
+                      <div className="lc-meta">{s.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── TODAY IN HISTORY ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#B45309" }} /><div className="widget-title">Today in Nigeria</div></div>
+              <div className="widget-body">
+                {[
+                  { year:"2006", text:"Sahara Reporters founded by Omoyele Sowore — Nigeria's first citizen journalism platform." },
+                  { year:"1999", text:"Nigeria returned to civilian rule after 16 years of military dictatorship under Olusegun Obasanjo." },
+                  { year:"1960", text:"Nigeria gained independence from Britain on October 1, becoming Africa's most populous nation." },
+                ].map((h,i) => (
+                  <div key={i} style={{ display:"flex", gap:10, padding:"9px 0", borderBottom:"1px solid var(--border)", alignItems:"flex-start" }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, fontWeight:700, color:"var(--orange)", flexShrink:0, minWidth:36 }}>{h.year}</span>
+                    <span style={{ fontSize:13, color:"#333", lineHeight:1.4 }}>{h.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── WORLD NEWS SIDEBAR ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#374151" }} /><div className="widget-title">World News</div></div>
+              <div className="widget-body">
+                {S.world.map(s => (
+                  <div key={s.id} className="lc" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                    <div style={{ position:"relative", width:76, height:57, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
+                      <Image src={s.image} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px"
+                        onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/76/57`;}} />
+                    </div>
+                    <div className="lc-body">
+                      <div className="lc-cat" style={{ color:"#374151" }}>{s.category}</div>
+                      <div className="lc-hl">{s.headline}</div>
+                      <div className="lc-meta">{s.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── HEALTH NEWS ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#0891B2" }} /><div className="widget-title">Health</div></div>
+              <div className="widget-body">
+                {S.health.map(s => (
+                  <div key={s.id} className="lc" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                    <div style={{ position:"relative", width:76, height:57, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
+                      <Image src={s.image} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px"
+                        onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/76/57`;}} />
+                    </div>
+                    <div className="lc-body">
+                      <div className="lc-cat" style={{ color:"#0891B2" }}>Health</div>
+                      <div className="lc-hl">{s.headline}</div>
+                      <div className="lc-meta">{s.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── AD SLOT ── */}
+            <Ad h={250} icon="🏠" msg="Buy Your Dream Home in Lekki from ₦45M" cta="View Listings" ctaColor="var(--orange)" />
+
+            {/* ── TECH NEWS ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">Tech & Innovation</div></div>
+              <div className="widget-body">
+                {S.tech.map(s => (
+                  <div key={s.id} className="lc" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                    <div style={{ position:"relative", width:76, height:57, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
+                      <Image src={s.image} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px"
+                        onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/76/57`;}} />
+                    </div>
+                    <div className="lc-body">
+                      <div className="lc-cat" style={{ color:"#1D4ED8" }}>Tech</div>
+                      <div className="lc-hl">{s.headline}</div>
+                      <div className="lc-meta">{s.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── NRT LIVE STATS ── */}
+            <div style={{ background:"var(--black)", borderRadius:10, padding:16, marginBottom:20 }}>
+              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:18, letterSpacing:2, color:"white", marginBottom:12 }}>📡 NRT LIVE STATS</div>
+              {[
+                { label:"Stories Published Today", val:"47", up:true },
+                { label:"AI Crawls Last Hour", val:"4", up:true },
+                { label:"Active Readers Now", val:"12,847", up:true },
+                { label:"Stories Validated", val:"41 / 47", up:true },
+                { label:"Stories Held for Review", val:"6", up:false },
+              ].map((stat,i) => (
+                <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
+                  <span style={{ fontSize:12, color:"rgba(255,255,255,0.6)", fontFamily:"'Inter',sans-serif" }}>{stat.label}</span>
+                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, fontWeight:700, color: stat.up ? "#6BCB77" : "#FF5C00" }}>{stat.val}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ── AFRICA NEWS ── */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#D97706" }} /><div className="widget-title">Africa</div></div>
+              <div className="widget-body">
+                {S.africa.map(s => (
+                  <div key={s.id} className="lc" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                    <div style={{ position:"relative", width:76, height:57, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
+                      <Image src={s.image} alt={s.headline} fill style={{ objectFit:"cover" }} sizes="76px"
+                        onError={(e)=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${s.id}/76/57`;}} />
+                    </div>
+                    <div className="lc-body">
+                      <div className="lc-cat" style={{ color:"#D97706" }}>Africa</div>
+                      <div className="lc-hl">{s.headline}</div>
+                      <div className="lc-meta">{s.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── AD SLOT 2 ── */}
+            <Ad h={250} icon="📊" msg="Trade Nigerian Stocks — Free Account, No Commission" cta="Start Trading" ctaColor="#007A3D" />
+
+            {/* ── NRT PODCAST EPISODES ── */}
+            <div style={{ background:"var(--navy)", borderRadius:10, padding:16, marginBottom:20 }}>
+              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:18, letterSpacing:2, color:"white", marginBottom:4 }}>🎙 MORE EPISODES</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginBottom:12 }}>NRT Daily Briefing Podcast</div>
+              {[
+                { title:"Super Eagles AFCON Analysis — Full Squad Review", dur:"9:14" },
+                { title:"The Naira Crisis — What Economists Say", dur:"11:32" },
+                { title:"Nollywood Record Breakers — Inside the Numbers", dur:"7:45" },
+                { title:"Nigeria's Solar Future — Borno's $120M Bet", dur:"8:03" },
+                { title:"EFCC Investigation Deep Dive", dur:"14:21" },
+              ].map((ep,i) => (
+                <div key={i} style={{ display:"flex", gap:8, alignItems:"center", padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.07)", cursor:"pointer" }}>
+                  <span style={{ width:26, height:26, background:"var(--orange)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", color:"white", fontSize:10, flexShrink:0 }}>▶</span>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:11, color:"rgba(255,255,255,0.8)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ep.title}</div>
+                    <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", marginTop:1 }}>{ep.dur}</div>
+                  </div>
+                </div>
+              ))}
+              <button style={{ marginTop:12, width:"100%", background:"var(--orange)", color:"white", border:"none", fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", padding:"9px", borderRadius:8, cursor:"pointer" }}>All Episodes</button>
+            </div>
+
+            {/* ── FINAL AD ── */}
+            <Ad h={200} icon="✈️" msg="Lagos to London from ₦620,000 — Limited Seats" cta="Book Now" ctaColor="var(--black)" />
+
+            {/* Opinion picks */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion Today</div></div>
+              <div className="widget-body">
+                <LC s={S.opinion[0]} os={setStory} />
+                <LC s={S.opinion[1]} os={setStory} />
+                <LC s={S.opinion[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* World news */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#374151" }} /><div className="widget-title">World News</div></div>
+              <div className="widget-body">
+                <LC s={S.world[0]} os={setStory} />
+                <LC s={S.world[1]} os={setStory} />
+                <LC s={S.world[2]} os={setStory} />
+              </div>
+            </div>
+
+            <Ad h={250} icon="🏠" msg="Buy Your Dream Home in Lekki from ₦45M" cta="View Listings" ctaColor="var(--orange)" />
+
+            {/* Health */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#0891B2" }} /><div className="widget-title">Health</div></div>
+              <div className="widget-body">
+                <LC s={S.health[0]} os={setStory} />
+                <LC s={S.health[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Tech */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">Tech & Innovation</div></div>
+              <div className="widget-body">
+                <LC s={S.tech[0]} os={setStory} />
+                <LC s={S.tech[1]} os={setStory} />
+              </div>
+            </div>
+
+            <Ad h={250} icon="📊" msg="Trade Nigerian Stocks from Your Phone — Free Account" cta="Start Trading" ctaColor="#007A3D" />
+
+            {/* Investigations */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Investigations</div></div>
+              <div className="widget-body">
+                <LC s={S.investigation[0]} os={setStory} />
+                <LC s={S.investigation[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Submit Leak CTA */}
+            <div style={{ background:"var(--black)", borderRadius:10, padding:20, marginBottom:20 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:16, fontWeight:800, color:"white", marginBottom:8 }}>🔒 Got a Tip?</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:14, lineHeight:1.6 }}>Submit leaks securely. Encrypted. Anonymous. Protected by Nigerian whistleblower law.</div>
+              <button onClick={() => setLeak(true)} style={{ width:"100%", background:"var(--orange)", color:"white", border:"none", fontSize:12, fontWeight:700, letterSpacing:1, textTransform:"uppercase", padding:"10px", borderRadius:8, cursor:"pointer" }}>Submit a Leak →</button>
+            </div>
+
+            {/* Africa */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#D97706" }} /><div className="widget-title">Africa</div></div>
+              <div className="widget-body">
+                <LC s={S.africa[0]} os={setStory} />
+                <LC s={S.africa[1]} os={setStory} />
+                <LC s={S.africa[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Money */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#007A3D" }} /><div className="widget-title">Money / Hustle</div></div>
+              <div className="widget-body">
+                <LC s={S.money[0]} os={setStory} />
+                <LC s={S.money[1]} os={setStory} />
+              </div>
+            </div>
+
+            <Ad h={250} icon="🎓" msg="Study Abroad 2026 — Scholarships for Nigerians" cta="Apply Now" ctaColor="#1D4ED8" />
+
+            {/* NRT Stats */}
+            <div style={{ background:"linear-gradient(135deg,#0D1B2A,#162035)", borderRadius:10, padding:20, marginBottom:20 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:14, fontWeight:800, color:"white", marginBottom:16, letterSpacing:"0.5px" }}>NRT By The Numbers</div>
+              {[
+                { label:"Stories Published Today", value:"47" },
+                { label:"Active News Feeds", value:"9" },
+                { label:"AI Verification Rate", value:"100%" },
+                { label:"Avg. Publish Time", value:"< 4 min" },
+                { label:"Daily Readers", value:"240K+" },
+              ].map(stat => (
+                <div key={stat.label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+                  <span style={{ fontSize:12, color:"rgba(255,255,255,0.55)" }}>{stat.label}</span>
+                  <span style={{ fontSize:14, fontWeight:700, color:"var(--orange)", fontFamily:"'JetBrains Mono',monospace" }}>{stat.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Entertainment */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Entertainment</div></div>
+              <div className="widget-body">
+                <LC s={S.entertainment[1]} os={setStory} />
+                <LC s={S.entertainment[2]} os={setStory} />
+                <LC s={S.entertainment[3]} os={setStory} />
+              </div>
+            </div>
+
+            <Ad h={200} icon="📱" msg="Download NRT App — Breaking Alerts Instantly. Free." cta="Download" ctaColor="var(--black)" />
+
           </div>
         </div>
       </div>

@@ -1,16 +1,15 @@
-// POST /api/crawl — trigger news crawl (protected by CRON_SECRET)
+// NRT News Crawl Agent — powered by Cerebras AI (5-key rotation)
 import { NextRequest, NextResponse } from "next/server";
-import { crawlFeeds, rewriteWithAI, getEmoji, getPhClass } from "../../../lib/crawler";
+import { crawlFeeds, getEmoji, getPhClass } from "../../../lib/crawler";
+import { rewriteNewsStory } from "../../../lib/cerebras";
 import { insertArticle } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  // Auth check
   const auth = req.headers.get("authorization") || "";
-  const secret = process.env.CRON_SECRET || "nrt-cron-2026";
-  if (!auth.includes(secret)) {
+  if (!auth.includes(process.env.CRON_SECRET || "nrt-cron-2026")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -22,8 +21,18 @@ export async function POST(req: NextRequest) {
 
     for (const item of raw) {
       try {
-        const rewritten = await rewriteWithAI(item);
-        if (!rewritten) continue;
+        // Use Cerebras with key rotation
+        const rewritten = await rewriteNewsStory({
+          title: item.title,
+          snippet: item.snippet,
+          source: item.source,
+          category: item.category,
+        });
+
+        if (!rewritten) {
+          results.errors.push(`Cerebras rewrite failed for: ${item.title.slice(0, 40)}`);
+          continue;
+        }
 
         const id = await insertArticle({
           category: rewritten.category,
@@ -35,22 +44,36 @@ export async function POST(req: NextRequest) {
           ph_class: getPhClass(rewritten.category),
           confidence: rewritten.confidence as "Verified" | "Developing",
           source_url: item.link,
-          is_breaking: item.category === "breaking",
+          is_breaking: false,
         });
 
         if (id) results.saved++;
       } catch (err: unknown) {
-        results.errors.push(err instanceof Error ? err.message : "unknown error");
+        results.errors.push(err instanceof Error ? err.message : "unknown");
       }
     }
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "unknown", ...results }, { status: 500 });
+    return NextResponse.json({
+      error: err instanceof Error ? err.message : "unknown",
+      ...results
+    }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, ...results, crawledAt: new Date().toISOString() });
+  return NextResponse.json({
+    success: true,
+    ...results,
+    engine: "Cerebras llama3.1-8b (5-key rotation)",
+    crawledAt: new Date().toISOString()
+  });
 }
 
-// GET for health check
 export async function GET() {
-  return NextResponse.json({ status: "NRT Crawl Agent ready", feeds: 9, schedule: "every 15 mins" });
+  return NextResponse.json({
+    status: "NRT Crawl Agent ready",
+    engine: "Cerebras AI — llama3.1-8b",
+    keys: 5,
+    rotation: "round-robin",
+    feeds: 9,
+    schedule: "every 15 mins"
+  });
 }
