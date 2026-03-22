@@ -127,107 +127,120 @@ export default function Home() {
         <div className="main-grid">
 
           {/* ════ CONTENT COLUMN ════ */}
-          <div style={{ minWidth:0, width:"100%", overflow:"hidden" }}>
+          <div style={{ minWidth:0, width:"100%" }}>
 
-            {/* HERO BLOCK */}
+            {/* HERO — 1 big left (60%) + 4 small stacked right (40%) */}
             <div className="hero-wrap">
               <div className="hero-main" onClick={() => setStory(hero)}>
                 <Image src={hero.image} alt={hero.headline} width={780} height={439}
-                  style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }} />
+                  style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }}
+                  onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/${hero.id}/780/439`;}} />
                 <div className="hero-overlay">
-                  <span className="hero-cat-pill">{hero.category}</span>
-                  <h1 className="hero-hl">{hero.headline}</h1>
+                  <span className="hero-cat" style={{ background:getCatColor(hero.category) }}>{hero.category.toUpperCase()}</span>
+                  <div className="hero-hl">{hero.headline}</div>
                   <div className="hero-meta">
-                    <span>{hero.time}</span>
-                    <span>·</span>
-                    <span className="conf-pill conf-v" style={{ background:"rgba(255,255,255,0.18)", color:"white" }}>✓ Verified</span>
-                    <span>·</span>
-                    <span>NRT Newsroom</span>
+                    <span>{hero.time}</span><span>·</span>
+                    <span className="conf-pill conf-v">✓ {hero.confidence}</span>
+                    <span>·</span><span>NRT Newsroom</span>
                   </div>
                 </div>
               </div>
               <div className="hero-side">
-                {heroSide.map(st => (
-                  <div key={st.id} className="hsi" onClick={() => setStory(st)}>
-                    <div style={{ position:"relative", width:72, height:54, flexShrink:0, borderRadius:6, overflow:"hidden" }}>
-                      <Image src={st.image} alt={st.headline} fill style={{ objectFit:"cover" }} sizes="72px" />
-                    </div>
-                    <div>
-                      <div className="hsi-cat" style={{ color:getCatColor(st.category) }}>{st.category}</div>
-                      <div className="hsi-hl">{st.headline}</div>
-                      <div className="hsi-time">{st.time}</div>
-                    </div>
+                {heroSide.map(s => (
+                  <div key={s.id} className="hsi" onClick={() => setStory(s)}>
+                    <div className="hsi-cat" style={{ color:getCatColor(s.category) }}>{s.category.toUpperCase()}</div>
+                    <div className="hsi-hl">{s.headline}</div>
+                    <div className="hsi-time">{s.time}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* LATEST — live feed polls /api/news every 90s */}
-            <SH title="Latest News" />
+            {/* LATEST NEWS — 3 cards */}
+            <SH title="Latest News" href="/" />
             <LiveFeed onStory={setStory} />
 
             <Ad h={90} icon="🎓" msg="Study Abroad 2026 — Scholarships Available for Nigerian Students" cta="Apply Now" ctaColor="var(--navy)" />
 
-            {/* POLITICS — 2 col featured + list */}
+            {/* POLITICS — 1 big left + 3 list stories right */}
             <SH title="Politics" color="var(--red)" href="/politics" />
             <div className="card-featured" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.politics[1]} os={setStory} size="lg" />
-              <div>
-                <LC s={S.politics[2]} os={setStory} />
-                <LC s={S.politics[3]} os={setStory} />
-                <Link href="/politics" style={{ display:"flex", alignItems:"center", justifyContent:"center", marginTop:12, padding:"10px", background:"#FFF0F0", borderRadius:8, fontSize:12, fontWeight:700, color:"var(--red)" }}>
-                  More Politics →
-                </Link>
+              <div className="nc" onClick={() => setStory(S.politics[1])} style={{ cursor:"pointer" }}>
+                <div className="nc-img-wrap">
+                  <Image src={S.politics[1].image} alt={S.politics[1].headline} width={500} height={280}
+                    style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }}
+                    onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/pol1/500/280`;}} />
+                  <span className="nc-cat-pill" style={{ color:"var(--red)" }}>Politics</span>
+                </div>
+                <div className="nc-body">
+                  <div className="nc-hl nc-hl-lg">{S.politics[1].headline}</div>
+                  <div className="nc-snippet">{S.politics[1].snippet}</div>
+                  <div className="nc-meta"><span>{S.politics[1].time}</span><span className="conf-pill conf-v">✓ Verified</span></div>
+                </div>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                {[S.politics[2], S.politics[3], S.nigeria[0]].map(s => (
+                  <LC key={s.id} s={s} os={setStory} />
+                ))}
               </div>
             </div>
 
-            {/* BLACK SCORES STRIP */}
+            {/* LIVE SCORES — black auto-scroll strip */}
             <ScoresStrip />
 
-            {/* SPORTS — 3 distinct sports */}
+            {/* SPORTS — 3 cards */}
             <SH title="Sports" color="#007A3D" href="/sports" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.sports[0]} os={setStory} />
               <NC s={S.sports[1]} os={setStory} />
-              <NC s={S.sports[4]} os={setStory} />
+              <NC s={S.sports[2]} os={setStory} />
             </div>
 
             <Ad h={90} icon="💊" msg="Health Insurance Starting ₦5,000/month — NRT Partners" cta="Get Quote" ctaColor="#0891B2" />
 
-            {/* ECONOMY — featured + 2 list */}
+            {/* ECONOMY & BUSINESS — 1 big featured + 2 list right */}
             <SH title="Economy & Business" color="#B45309" href="/economy" />
             <div className="card-featured" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.economy[1]} os={setStory} size="lg" />
-              <div>
+              <div className="nc" onClick={() => setStory(S.economy[0])} style={{ cursor:"pointer" }}>
+                <div className="nc-img-wrap">
+                  <Image src={S.economy[0].image} alt={S.economy[0].headline} width={500} height={280}
+                    style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }}
+                    onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/eco0/500/280`;}} />
+                  <span className="nc-cat-pill" style={{ color:"#B45309" }}>Economy</span>
+                </div>
+                <div className="nc-body">
+                  <div className="nc-hl nc-hl-lg">{S.economy[0].headline}</div>
+                  <div className="nc-snippet">{S.economy[0].snippet}</div>
+                  <div className="nc-meta"><span>{S.economy[0].time}</span><span className="conf-pill conf-v">✓ Verified</span></div>
+                </div>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                <LC s={S.economy[1]} os={setStory} />
                 <LC s={S.economy[2]} os={setStory} />
                 <LC s={S.economy[3]} os={setStory} />
-                <Link href="/economy" style={{ display:"flex", alignItems:"center", justifyContent:"center", marginTop:12, padding:"10px", background:"#FFF8EE", borderRadius:8, fontSize:12, fontWeight:700, color:"#B45309" }}>
-                  More Business →
-                </Link>
               </div>
             </div>
 
-            {/* VIDEO ROW */}
-            <SH title="Video" />
+            {/* VIDEO — 5 cards (approved) */}
+            <SH title="Video" href="/" />
             <div className="vid-grid" style={{ minWidth:0, width:"100%" }}>
-              {[S.politics[1], S.sports[3], S.economy[2], S.entertainment[1]].map((st, i) => (
-                <div key={i} className="vid-card" onClick={() => setStory(st)}>
-                  <div className="vid-thumb">
-                    <Image src={st.image} alt={st.headline} width={280} height={158}
-                      style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }} />
+              {[S.politics[1], S.sports[0], S.economy[2], S.entertainment[0], S.africa[0]].map((s,i) => (
+                <div key={s.id} className="vid-card" onClick={() => setStory(s)} style={{ cursor:"pointer" }}>
+                  <div style={{ position:"relative", borderRadius:8, overflow:"hidden", aspectRatio:"16/9" }}>
+                    <Image src={s.image} alt={s.headline} width={200} height={113}
+                      style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }}
+                      onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/vid${i}/200/113`;}} />
                     <div className="vid-play">▶</div>
-                    <span className="vid-dur">{["4:12","2:47","3:31","5:20"][i]}</span>
                   </div>
                   <div className="vid-body">
-                    <div style={{ fontSize:9, fontWeight:700, letterSpacing:"1.5px", textTransform:"uppercase", color:getCatColor(st.category), marginBottom:4 }}>{st.category}</div>
-                    <div className="vid-title">{st.headline}</div>
-                    <div className="vid-meta">NRT Video · {st.time}</div>
+                    <div className="nc-cat" style={{ color:getCatColor(s.category), fontSize:10, fontWeight:700, letterSpacing:1, textTransform:"uppercase", marginBottom:4 }}>{s.category}</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#111", lineHeight:1.3 }}>{s.headline.slice(0,55)}{s.headline.length>55?"...":""}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* ENTERTAINMENT */}
+            {/* ENTERTAINMENT — 3 cards */}
             <SH title="Entertainment & Culture" color="#7C3AED" href="/entertainment" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.entertainment[0]} os={setStory} />
@@ -235,7 +248,7 @@ export default function Home() {
               <NC s={S.entertainment[2]} os={setStory} />
             </div>
 
-            {/* AFRICA */}
+            {/* AFRICA — 3 cards */}
             <SH title="Africa" color="#D97706" href="/africa" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.africa[0]} os={setStory} />
@@ -245,28 +258,44 @@ export default function Home() {
 
             <Ad h={90} icon="✈️" msg="Lagos to London from ₦620,000 — Limited Seats" cta="Book Now" ctaColor="var(--black)" />
 
-            {/* MONEY / HUSTLE */}
+            {/* INVESTIGATIONS — 1 big + 1 list */}
+            <SH title="Investigations" color="var(--red)" href="/investigation" />
+            <div className="card-featured" style={{ minWidth:0, width:"100%" }}>
+              <div className="nc" onClick={() => setStory(S.investigation[0])} style={{ cursor:"pointer" }}>
+                <div className="nc-img-wrap">
+                  <Image src={S.investigation[0].image} alt={S.investigation[0].headline} width={500} height={280}
+                    style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", display:"block" }}
+                    onError={e=>{(e.target as HTMLImageElement).src=`https://picsum.photos/seed/inv0/500/280`;}} />
+                  <span className="nc-cat-pill" style={{ color:"var(--red)" }}>Investigation</span>
+                </div>
+                <div className="nc-body">
+                  <div className="nc-hl nc-hl-lg">{S.investigation[0].headline}</div>
+                  <div className="nc-snippet">{S.investigation[0].snippet}</div>
+                  <div className="nc-meta"><span>{S.investigation[0].time}</span></div>
+                </div>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                <LC s={S.investigation[1]} os={setStory} />
+                <LC s={S.nigeria[1]} os={setStory} />
+                <LC s={S.nigeria[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* MONEY — 2 cards */}
             <SH title="Money / Hustle" color="#007A3D" href="/money" />
             <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.money[0]} os={setStory} size="md" />
               <NC s={S.money[1]} os={setStory} size="md" />
             </div>
 
-            {/* INVESTIGATIONS */}
-            <SH title="Investigations" color="var(--red)" href="/investigation" />
-            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
-              <NC s={S.investigation[0]} os={setStory} size="md" />
-              <NC s={S.investigation[1]} os={setStory} size="md" />
-            </div>
-
-            {/* TECH */}
+            {/* TECH — 2 cards */}
             <SH title="Tech & Innovation" color="#1D4ED8" href="/tech" />
             <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.tech[0]} os={setStory} size="md" />
               <NC s={S.tech[1]} os={setStory} size="md" />
             </div>
 
-            {/* WORLD */}
+            {/* WORLD — 3 cards */}
             <SH title="World News" color="#1D4ED8" href="/world" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.world[0]} os={setStory} />
@@ -274,14 +303,14 @@ export default function Home() {
               <NC s={S.world[2]} os={setStory} />
             </div>
 
-            {/* HEALTH */}
+            {/* HEALTH — 2 cards */}
             <SH title="Health" color="#0891B2" href="/health" />
             <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.health[0]} os={setStory} size="md" />
               <NC s={S.health[1]} os={setStory} size="md" />
             </div>
 
-            {/* OPINION */}
+            {/* OPINION — 3 cards */}
             <SH title="Opinion & Analysis" color="#7C3AED" href="/opinion" />
             <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
               <NC s={S.opinion[0]} os={setStory} />
@@ -320,7 +349,7 @@ export default function Home() {
           </div>
 
           {/* ════ SIDEBAR ════ */}
-          <div style={{ minWidth:0, width:"100%" }}>
+          <div style={{ minWidth:0, width:"100%", display:"flex", flexDirection:"column", gap:20 }}>
 
             {/* Weather */}
             <div className="weather-card">
@@ -348,7 +377,7 @@ export default function Home() {
                   { t:"#DavidoTour",  n:"15.3K", href:"/entertainment" },
                   { t:"#CBNRateHike", n:"12.1K", href:"/economy" },
                   { t:"#Nollywood",   n:"9.8K",  href:"/entertainment" },
-                ].map((tr, i) => (
+                ].map((tr,i) => (
                   <Link key={tr.t} href={tr.href} className="trend-row" style={{ textDecoration:"none" }}>
                     <span className="tr-rank">{i+1}</span>
                     <span className="tr-label">{tr.t}</span>
@@ -361,7 +390,7 @@ export default function Home() {
             {/* Ad */}
             <Ad h={250} icon="🏠" msg="Buy Your Dream Home in Lekki from ₦45M" cta="View Listings" ctaColor="var(--navy)" />
 
-            {/* Markets */}
+            {/* Markets Live */}
             <div className="widget">
               <div className="widget-hdr"><div className="widget-bar" style={{ background:"#007A3D" }} /><div className="widget-title">Markets Live</div></div>
               <div className="widget-body">
@@ -371,11 +400,11 @@ export default function Home() {
                   { l:"DANGCEM", v:"₦1,042",  up:true },
                   { l:"Crude",   v:"$74.40",  up:true },
                   { l:"GTCO",    v:"₦58.20",  up:false },
-                  { l:"Gold",    v:"$3,021",   up:true },
+                  { l:"Gold",    v:"$3,021",  up:true },
                 ].map(mr => (
                   <div key={mr.l} className="mr-row">
                     <span className="mr-l">{mr.l}</span>
-                    <span className={mr.up ? "mr-v up" : "mr-v dn"}>{mr.v} {mr.up ? "▲" : "▼"}</span>
+                    <span className={mr.up ? "mr-v up" : "mr-v dn"}>{mr.v} {mr.up?"▲":"▼"}</span>
                   </div>
                 ))}
               </div>
@@ -388,6 +417,7 @@ export default function Home() {
                 <LC s={S.investigation[0]} os={setStory} />
                 <LC s={S.politics[1]}      os={setStory} />
                 <LC s={S.economy[0]}       os={setStory} />
+                <LC s={S.sports[2]}        os={setStory} />
               </div>
             </div>
 
@@ -409,8 +439,46 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Ad */}
-            <Ad h={200} icon="📱" msg="Download NRT App — Breaking Alerts Instantly. Free." cta="Download" ctaColor="var(--black)" />
+            {/* NRT Podcast */}
+            <div className="pod-strip" style={{ margin:0 }}>
+              <span className="pod-icon">🎙</span>
+              <div style={{ flex:1 }}>
+                <div className="pod-title">NRT PODCAST</div>
+                <div className="pod-desc">Daily briefing — top stories every morning at 7AM WAT.</div>
+                <div className="pod-eps">
+                  {[
+                    { title:"Today's Briefing — Top 8 Stories", dur:"5:02" },
+                    { title:"Naira Crisis Deep Dive with Economists", dur:"8:14" },
+                    { title:"Super Eagles Squad Analysis", dur:"6:33" },
+                  ].map((ep,i) => (
+                    <div key={i} className="pod-ep">
+                      <div className="pod-ep-play">▶</div>
+                      <span className="pod-ep-title">{ep.title}</span>
+                      <span className="pod-ep-dur">{ep.dur}</span>
+                    </div>
+                  ))}
+                </div>
+                <button className="pod-cta" style={{ marginTop:10 }}>All Episodes →</button>
+              </div>
+            </div>
+
+            {/* Daily Newsletter */}
+            <div style={{ background:"linear-gradient(135deg,#FF5C00,#FF7A2F)", borderRadius:10, padding:20 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:13, fontWeight:800, color:"white", marginBottom:4, letterSpacing:0.5 }}>DAILY NEWSLETTER</div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.85)", marginBottom:12, lineHeight:1.5 }}>Join 240,000+ Nigerians. Free alerts, no spam.</div>
+              <input placeholder="Enter your email..." style={{ width:"100%", padding:"9px 12px", borderRadius:6, border:"none", fontSize:12, marginBottom:8, outline:"none", fontFamily:"'Inter',sans-serif" }} />
+              <button style={{ width:"100%", background:"white", color:"var(--orange)", border:"none", fontSize:12, fontWeight:800, padding:"9px", borderRadius:6, cursor:"pointer", letterSpacing:1, textTransform:"uppercase", fontFamily:"'Inter',sans-serif" }}>Subscribe Free</button>
+            </div>
+
+            {/* Opinion & Analysis */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion & Analysis</div></div>
+              <div className="widget-body">
+                <LC s={S.opinion[0]} os={setStory} />
+                <LC s={S.opinion[1]} os={setStory} />
+                <LC s={S.opinion[2]} os={setStory} />
+              </div>
+            </div>
 
             {/* Today in Nigeria */}
             <div className="widget">
@@ -429,65 +497,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Nigeria Local */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Nigeria Local</div></div>
-              <div className="widget-body">
-                <LC s={S.nigeria[0]} os={setStory} />
-                <LC s={S.nigeria[1]} os={setStory} />
-                <LC s={S.nigeria[2]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Podcast */}
-            <div className="pod-strip" style={{ margin:0 }}>
-              <span className="pod-icon">🎙</span>
-              <div style={{ flex:1 }}>
-                <div className="pod-title">NRT DAILY BRIEFING</div>
-                <div className="pod-desc">AI-hosted audio digest — top stories every morning 7AM WAT.</div>
-                <div className="pod-eps">
-                  {[
-                    { title:"Senate Media Bill — What It Means", dur:"8:42" },
-                    { title:"Naira Crisis Deep Dive", dur:"11:20" },
-                    { title:"Super Eagles AFCON Preview", dur:"6:55" },
-                  ].map((ep, i) => (
-                    <div key={i} className="pod-ep">
-                      <div className="pod-ep-play">▶</div>
-                      <span className="pod-ep-title">{ep.title}</span>
-                      <span className="pod-ep-dur">{ep.dur}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Newsletter */}
-            <div style={{ background:"linear-gradient(135deg,#FF5C00,#FF7A2F)", borderRadius:10, padding:20 }}>
-              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:14, fontWeight:800, color:"white", marginBottom:6 }}>NEVER MISS BREAKING NEWS</div>
-              <div style={{ fontSize:12, color:"rgba(255,255,255,0.85)", marginBottom:14, lineHeight:1.5 }}>Join 240,000+ Nigerians. Free alerts, no spam.</div>
-              <input placeholder="Your email address" style={{ width:"100%", padding:"10px 14px", borderRadius:6, border:"none", fontSize:13, marginBottom:8, outline:"none" }} />
-              <button style={{ width:"100%", background:"white", color:"var(--orange)", border:"none", fontSize:12, fontWeight:800, padding:10, borderRadius:6, cursor:"pointer", letterSpacing:1, textTransform:"uppercase" }}>Subscribe Free →</button>
-            </div>
-
-            {/* Ad */}
-            <Ad h={250} icon="💰" msg="Invest in Nigerian Real Estate from $500" cta="Learn More" ctaColor="#007A3D" />
-
-          </div>
-
-          {/* ════ RIGHT COLUMN ════ */}
-          <div style={{ minWidth:0, width:"100%", display:"flex", flexDirection:"column", gap:20 }}>
-
-            {/* Opinion Today */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion Today</div></div>
-              <div className="widget-body">
-                <LC s={S.opinion[0]} os={setStory} />
-                <LC s={S.opinion[1]} os={setStory} />
-                <LC s={S.opinion[2]} os={setStory} />
-              </div>
-            </div>
-
-            {/* World News */}
+            {/* World News sidebar */}
             <div className="widget">
               <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">World News</div></div>
               <div className="widget-body">
@@ -497,91 +507,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Ad */}
-            <Ad h={250} icon="🎓" msg="Study Abroad 2026 — Scholarships for Nigerian Students" cta="Apply Now" ctaColor="#1D4ED8" />
-
-            {/* Health */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#0891B2" }} /><div className="widget-title">Health</div></div>
-              <div className="widget-body">
-                <LC s={S.health[0]} os={setStory} />
-                <LC s={S.health[1]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Tech */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">Tech & Innovation</div></div>
-              <div className="widget-body">
-                <LC s={S.tech[0]} os={setStory} />
-                <LC s={S.tech[1]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Africa */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#D97706" }} /><div className="widget-title">Africa</div></div>
-              <div className="widget-body">
-                <LC s={S.africa[0]} os={setStory} />
-                <LC s={S.africa[1]} os={setStory} />
-                <LC s={S.africa[2]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Entertainment */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Entertainment</div></div>
-              <div className="widget-body">
-                <LC s={S.entertainment[0]} os={setStory} />
-                <LC s={S.entertainment[1]} os={setStory} />
-                <LC s={S.entertainment[2]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Money */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#007A3D" }} /><div className="widget-title">Money / Hustle</div></div>
-              <div className="widget-body">
-                <LC s={S.money[0]} os={setStory} />
-                <LC s={S.money[1]} os={setStory} />
-              </div>
-            </div>
-
-            {/* Investigation */}
-            <div className="widget">
-              <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Investigations</div></div>
-              <div className="widget-body">
-                <LC s={S.investigation[0]} os={setStory} />
-                <LC s={S.investigation[1]} os={setStory} />
-              </div>
-            </div>
-
-            {/* NRT Stats */}
-            <div style={{ background:"linear-gradient(135deg,#0D1B2A,#162035)", borderRadius:10, padding:20 }}>
-              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:13, fontWeight:800, color:"white", marginBottom:14, letterSpacing:"0.5px" }}>NRT By The Numbers</div>
-              {[
-                { label:"Stories Today",      value:"47" },
-                { label:"Active Feeds",        value:"10" },
-                { label:"AI Verify Rate",      value:"100%" },
-                { label:"Avg Publish Time",    value:"< 4 min" },
-                { label:"Daily Readers",       value:"240K+" },
-              ].map(stat => (
-                <div key={stat.label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
-                  <span style={{ fontSize:11, color:"rgba(255,255,255,0.55)" }}>{stat.label}</span>
-                  <span style={{ fontSize:13, fontWeight:700, color:"var(--orange)", fontFamily:"'JetBrains Mono',monospace" }}>{stat.value}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Ad */}
-            <Ad h={200} icon="🚀" msg="Launch Your Startup in Nigeria — Free Legal Templates" cta="Get Started" ctaColor="var(--orange)" />
+            {/* Ad bottom */}
+            <Ad h={250} icon="🚀" msg="Launch Your Business in Nigeria — Free Legal Templates" cta="Get Started" ctaColor="var(--orange)" />
 
           </div>
 
         </div>
       </div>
 
-      {/* FOOTER */}
+            {/* FOOTER */}
       <footer>
         <div className="footer-inner">
           <div className="footer-top">

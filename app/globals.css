@@ -27,7 +27,7 @@
 *{box-sizing:border-box;}
 html{overflow-x:hidden;}body{overflow-x:hidden;}
 .page-wrap{max-width:1300px;margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box;}
-.main-grid{display:grid;grid-template-columns:1fr 320px 280px;gap:24px;padding:20px 0 0;width:100%;min-width:0;align-items:stretch;}
+.main-grid{display:grid;grid-template-columns:1fr 300px;gap:24px;padding:20px 0 0;width:100%;min-width:0;}
 .content-col{min-width:0;width:100%;}
 .card-grid-3,.card-grid-2,.card-grid-4,.card-featured,.vid-grid{min-width:0;}
 .card-grid-3>*,.card-grid-2>*,.card-grid-4>*,.card-featured>*,.vid-grid>*{min-width:0;overflow:hidden;}
@@ -187,7 +187,7 @@ a{text-decoration:none;color:inherit;}
 .down{color:var(--red);}
 
 /* ── VIDEO CARDS ── */
-.vid-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.vid-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
 .vid-card{background:white;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
 .vid-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.12);}
 .vid-thumb{position:relative;overflow:hidden;}
