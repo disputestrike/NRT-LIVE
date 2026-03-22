@@ -6,6 +6,7 @@ import { S, Story, getCatColor } from "./data/stories";
 import Ticker from "./components/Ticker";
 import Navbar from "./components/Navbar";
 import ScoresStrip from "./components/ScoresStrip";
+import MultiCluster from "./components/MultiCluster";
 import StoryModal from "./components/StoryModal";
 import LeakModal from "./components/LeakModal";
 
@@ -306,6 +307,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* ══ MULTI-CLUSTER FEED BREAK ══ */}
+      <MultiCluster onStory={setStory} />
 
       {/* STREAMING NOW — full-width black strip like CNN */}
       <div className="streaming-strip">
