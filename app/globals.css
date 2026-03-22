@@ -14,11 +14,12 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 /* ── STICKY HEADER WRAPPER — ticker + nav locked together ── */
 .sticky-header{
-  position:sticky;
+  position:fixed;
   top:0;
-  z-index:9999;
+  left:0;
+  right:0;
   width:100%;
-  will-change:transform;
+  z-index:9999;
 }
 
 
@@ -39,7 +40,7 @@ html{overflow-x:hidden;}body{overflow-x:hidden;}
 .sidebar-col{min-width:0;width:316px;flex-shrink:0;}
 
 html{scroll-behavior:smooth;}
-body{background:var(--gray-bg);color:#111;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;}
+body{background:var(--gray-bg);color:#111;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;padding-top:82px;}
 img{display:block;max-width:100%;}
 a{text-decoration:none;color:inherit;}
 
