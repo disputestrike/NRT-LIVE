@@ -61,20 +61,6 @@ function LC({ s, os }: { s:Story; os:(x:Story)=>void }) {
   );
 }
 
-const MARKET = [
-  { l:"USD/NGN",  v:"₦1,420", c:"▼ 0.8%", up:false },
-  { l:"Bitcoin",  v:"$84,210", c:"▲ 2.1%", up:true },
-  { l:"DANGCEM", v:"₦1,042", c:"▲ 4.9%", up:true },
-  { l:"MTNN",    v:"₦215.4", c:"▼ 1.2%", up:false },
-  { l:"Crude Oil",v:"$74.40", c:"▲ 0.6%", up:true },
-  { l:"Gold",    v:"$2,341", c:"▲ 0.3%", up:true },
-];
-const POD_EPS = [
-  { title:"Today's 7AM Briefing — Top 8 Stories", dur:"5:02" },
-  { title:"Naira Crisis Deep Dive with Economists", dur:"8:14" },
-  { title:"Super Eagles Squad Analysis", dur:"6:33" },
-  { title:"Week in Review — March 21, 2026", dur:"12:07" },
-];
 
 /* ── Ad slot component ──────────────────────────────────────── */
 function Ad({ h=90, icon="", msg="", cta="", ctaColor="var(--orange)" }:

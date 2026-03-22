@@ -1,27 +1,27 @@
-/**
- * LiveFeed — polls /api/news every 90s and rotates top stories
- * Falls back to static stories when API unavailable
- */
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Story, S, getCatColor } from "../data/stories";
 
 type LiveArticle = {
   id: string; category: string; category_slug: string;
   headline: string; snippet: string; image_url: string;
-  confidence: string; published_at: string;
+  confidence: string; published_at: string; body?: string;
 };
 
 function toStory(a: LiveArticle): Story {
   return {
     id: a.id, category: a.category, categorySlug: a.category_slug,
-    headline: a.headline, snippet: a.snippet, time: formatAgo(new Date(a.published_at)),
+    headline: a.headline, snippet: a.snippet,
+    time: formatAgo(new Date(a.published_at)),
     confidence: a.confidence as "Verified"|"Developing"|"Unverified",
-    body: "", image: a.image_url || `https://picsum.photos/seed/${a.id}/480/270`,
+    body: a.body || "", 
+    image: a.image_url || `https://picsum.photos/seed/${a.id}/480/270`,
     related: [],
   };
 }
+
 function formatAgo(d: Date): string {
   const m = Math.floor((Date.now()-d.getTime())/60000);
   if(m<1) return "Just now"; if(m<60) return `${m} min${m===1?"":"s"} ago`;
@@ -29,10 +29,12 @@ function formatAgo(d: Date): string {
 }
 
 export default function LiveFeed({ onStory }: { onStory:(s:Story)=>void }) {
-  const [articles, setArticles] = useState<Story[]>([...S.politics, ...S.economy, ...S.sports].slice(0,6));
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [articles, setArticles] = useState<Story[]>([
+    ...S.politics, ...S.economy, ...S.sports
+  ].slice(0,6));
   const [isLive, setIsLive] = useState(false);
-  const [pulse, setPulse] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [crawling, setCrawling] = useState(false);
 
   const fetchLatest = useCallback(async () => {
     try {
@@ -43,37 +45,60 @@ export default function LiveFeed({ onStory }: { onStory:(s:Story)=>void }) {
         setArticles(data.articles.map(toStory));
         setIsLive(true);
         setLastUpdated(new Date());
-        setPulse(true);
-        setTimeout(() => setPulse(false), 2000);
       }
     } catch { /* keep current */ }
   }, []);
 
+  // Auto-trigger crawl if no live articles after 3 seconds
+  const triggerCrawl = useCallback(async () => {
+    if (crawling) return;
+    setCrawling(true);
+    try {
+      await fetch("/api/cron", { method:"GET", cache:"no-store" });
+      // Wait 5s then re-fetch
+      setTimeout(fetchLatest, 5000);
+    } catch {}
+    setCrawling(false);
+  }, [crawling, fetchLatest]);
+
   useEffect(() => {
-    // Initial fetch via timeout avoids synchronous setState in effect
-    const initial = setTimeout(fetchLatest, 0);
-    const id = setInterval(fetchLatest, 90_000);
-    return () => { clearTimeout(initial); clearInterval(id); };
+    const init = setTimeout(async () => {
+      await fetchLatest();
+    }, 0);
+    const interval = setInterval(fetchLatest, 90_000);
+    return () => { clearTimeout(init); clearInterval(interval); };
   }, [fetchLatest]);
+
+  // If still static after 4s, trigger a crawl automatically
+  useEffect(() => {
+    const check = setTimeout(() => {
+      if (!isLive) triggerCrawl();
+    }, 4000);
+    return () => clearTimeout(check);
+  }, [isLive, triggerCrawl]);
 
   const c = getCatColor;
 
   return (
     <div>
-      {/* Live status bar */}
-      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-        <span style={{ width:8, height:8, borderRadius:"50%", background: isLive ? "#007A3D" : "#888",
-          boxShadow: isLive ? "0 0 0 3px rgba(0,122,61,0.2)" : "none",
-          animation: pulse ? "blink 0.5s ease 3" : "none", display:"inline-block" }} />
-        <span style={{ fontSize:11, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase",
-          color: isLive ? "#007A3D" : "#888", fontFamily:"'Inter',sans-serif" }}>
-          {isLive ? "Live" : "Static"} · Updated {formatAgo(lastUpdated)}
-        </span>
-        {!isLive && (
-          <span style={{ fontSize:10, color:"#aaa", fontFamily:"'Inter',sans-serif" }}>
-            (Connect DB + ANTHROPIC_API_KEY for live feed)
+      {/* Live status indicator */}
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12, justifyContent:"space-between" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+          <span style={{ 
+            width:8, height:8, borderRadius:"50%", display:"inline-block",
+            background: isLive ? "#007A3D" : crawling ? "#FF5C00" : "#888",
+            animation: (isLive||crawling) ? "blink 1s infinite" : "none",
+            boxShadow: isLive ? "0 0 0 3px rgba(0,122,61,0.2)" : "none"
+          }} />
+          <span style={{ fontSize:11, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase",
+            color: isLive ? "#007A3D" : crawling ? "#FF5C00" : "#888",
+            fontFamily:"'Inter',sans-serif" }}>
+            {isLive ? `Live · Updated ${formatAgo(lastUpdated)}` : crawling ? "Fetching latest news..." : "Loading..."}
           </span>
-        )}
+        </div>
+        <Link href="/admin" style={{ fontSize:10, color:"#aaa", textDecoration:"none", fontFamily:"'Inter',sans-serif" }}>
+          Admin →
+        </Link>
       </div>
 
       {/* 3-col grid */}
