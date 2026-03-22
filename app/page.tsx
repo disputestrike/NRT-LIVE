@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import StoryModal from "./components/StoryModal";
 import LeakModal from "./components/LeakModal";
 import { S, Story, getCatColor } from "./data/stories";
+import ScoresStrip from "./components/ScoresStrip";
 
 /* ── Shared helpers ─────────────────────────────────────────── */
 function SH({ title, color="var(--black)", href="/" }: { title:string; color?:string; href?:string }) {
@@ -58,16 +59,6 @@ function LC({ s, os }: { s:Story; os:(x:Story)=>void }) {
   );
 }
 
-const SCORES = [
-  { league:"🇳🇬 Super Eagles", h:"Nigeria", a:"Ghana", hs:2, as:0, st:"67'", live:true },
-  { league:"🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League", h:"Man City", a:"Arsenal", hs:2, as:1, st:"FT", live:false },
-  { league:"🏆 UCL", h:"Real Madrid", a:"PSG", hs:3, as:1, st:"82'", live:true },
-  { league:"🇮🇹 Serie A", h:"Napoli", a:"Juventus", hs:4, as:1, st:"FT", live:false },
-  { league:"🇫🇷 Ligue 1", h:"Monaco", a:"Marseille", hs:2, as:2, st:"90+3'", live:true },
-  { league:"🇩🇪 Bundesliga", h:"Bayern", a:"Dortmund", hs:5, as:2, st:"FT", live:false },
-  { league:"🏀 NBA", h:"Bucks", a:"Celtics", hs:109, as:107, st:"OT", live:true },
-  { league:"🌍 CAF CL", h:"Al Ahly", a:"Esperance", hs:1, as:1, st:"FT·AET", live:false },
-];
 const MARKET = [
   { l:"USD/NGN",  v:"₦1,420", c:"▼ 0.8%", up:false },
   { l:"Bitcoin",  v:"$84,210", c:"▲ 2.1%", up:true },
@@ -208,18 +199,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* LIVE SCORES */}
-            <SH title="Live Scores" color="#007A3D" href="/sports" />
-            <div className="scores-row" style={{ width:"100%", maxWidth:"100%" }}>
-              {SCORES.map((sc, i) => (
-                <div key={i} className={`score-pill${sc.live?" live-game":""}`} onClick={() => setStory(S.sports[0])}>
-                  <div className="sp-league">{sc.league}</div>
-                  <div className="sp-row"><span className={`sp-team${sc.hs<sc.as?" dim":""}`}>{sc.h}</span><span className="sp-score">{sc.hs}</span></div>
-                  <div className="sp-row"><span className={`sp-team${sc.as<sc.hs?" dim":""}`}>{sc.a}</span><span className="sp-score">{sc.as}</span></div>
-                  <div className={sc.live?"sp-status sp-live":"sp-status sp-ft"}>{sc.st}</div>
-                </div>
-              ))}
-            </div>
+            {/* BLACK SCORES STRIP */}
+            <ScoresStrip />
 
             {/* SPORTS — 3 distinct sports */}
             <SH title="Sports" color="#007A3D" href="/sports" />
