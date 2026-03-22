@@ -241,6 +241,70 @@ export default function Home() {
               ))}
             </div>
 
+            {/* ENTERTAINMENT */}
+            <SH title="Entertainment & Culture" color="#7C3AED" href="/entertainment" />
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.entertainment[0]} os={setStory} />
+              <NC s={S.entertainment[1]} os={setStory} />
+              <NC s={S.entertainment[2]} os={setStory} />
+            </div>
+
+            {/* AFRICA */}
+            <SH title="Africa" color="#D97706" href="/africa" />
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.africa[0]} os={setStory} />
+              <NC s={S.africa[1]} os={setStory} />
+              <NC s={S.africa[2]} os={setStory} />
+            </div>
+
+            <Ad h={90} icon="✈️" msg="Lagos to London from ₦620,000 — Limited Seats" cta="Book Now" ctaColor="var(--black)" />
+
+            {/* MONEY / HUSTLE */}
+            <SH title="Money / Hustle" color="#007A3D" href="/money" />
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.money[0]} os={setStory} size="md" />
+              <NC s={S.money[1]} os={setStory} size="md" />
+            </div>
+
+            {/* INVESTIGATIONS */}
+            <SH title="Investigations" color="var(--red)" href="/investigation" />
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.investigation[0]} os={setStory} size="md" />
+              <NC s={S.investigation[1]} os={setStory} size="md" />
+            </div>
+
+            {/* TECH */}
+            <SH title="Tech & Innovation" color="#1D4ED8" href="/tech" />
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.tech[0]} os={setStory} size="md" />
+              <NC s={S.tech[1]} os={setStory} size="md" />
+            </div>
+
+            {/* WORLD */}
+            <SH title="World News" color="#1D4ED8" href="/world" />
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.world[0]} os={setStory} />
+              <NC s={S.world[1]} os={setStory} />
+              <NC s={S.world[2]} os={setStory} />
+            </div>
+
+            {/* HEALTH */}
+            <SH title="Health" color="#0891B2" href="/health" />
+            <div className="card-grid-2" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.health[0]} os={setStory} size="md" />
+              <NC s={S.health[1]} os={setStory} size="md" />
+            </div>
+
+            {/* OPINION */}
+            <SH title="Opinion & Analysis" color="#7C3AED" href="/opinion" />
+            <div className="card-grid-3" style={{ minWidth:0, width:"100%" }}>
+              <NC s={S.opinion[0]} os={setStory} />
+              <NC s={S.opinion[1]} os={setStory} />
+              <NC s={S.opinion[2]} os={setStory} />
+            </div>
+
+            <Ad h={90} icon="🏦" msg="Open a Dollar Account Today — Zero Fees for 6 Months" cta="Get Started" ctaColor="var(--navy)" />
+
             {/* LEAK FORM */}
             <div className="leak-wrap">
               <h2>GOT A <span>LEAK?</span></h2>
@@ -378,6 +442,153 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Nigeria Local */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Nigeria Local</div></div>
+              <div className="widget-body">
+                <LC s={S.nigeria[0]} os={setStory} />
+                <LC s={S.nigeria[1]} os={setStory} />
+                <LC s={S.nigeria[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Podcast */}
+            <div className="pod-strip" style={{ margin:0 }}>
+              <span className="pod-icon">🎙</span>
+              <div style={{ flex:1 }}>
+                <div className="pod-title">NRT DAILY BRIEFING</div>
+                <div className="pod-desc">AI-hosted audio digest — top stories every morning 7AM WAT.</div>
+                <div className="pod-eps">
+                  {[
+                    { title:"Senate Media Bill — What It Means", dur:"8:42" },
+                    { title:"Naira Crisis Deep Dive", dur:"11:20" },
+                    { title:"Super Eagles AFCON Preview", dur:"6:55" },
+                  ].map((ep, i) => (
+                    <div key={i} className="pod-ep">
+                      <div className="pod-ep-play">▶</div>
+                      <span className="pod-ep-title">{ep.title}</span>
+                      <span className="pod-ep-dur">{ep.dur}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Newsletter */}
+            <div style={{ background:"linear-gradient(135deg,#FF5C00,#FF7A2F)", borderRadius:10, padding:20 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:14, fontWeight:800, color:"white", marginBottom:6 }}>NEVER MISS BREAKING NEWS</div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.85)", marginBottom:14, lineHeight:1.5 }}>Join 240,000+ Nigerians. Free alerts, no spam.</div>
+              <input placeholder="Your email address" style={{ width:"100%", padding:"10px 14px", borderRadius:6, border:"none", fontSize:13, marginBottom:8, outline:"none" }} />
+              <button style={{ width:"100%", background:"white", color:"var(--orange)", border:"none", fontSize:12, fontWeight:800, padding:10, borderRadius:6, cursor:"pointer", letterSpacing:1, textTransform:"uppercase" }}>Subscribe Free →</button>
+            </div>
+
+            {/* Ad */}
+            <Ad h={250} icon="💰" msg="Invest in Nigerian Real Estate from $500" cta="Learn More" ctaColor="#007A3D" />
+
+          </div>
+
+          {/* ════ RIGHT COLUMN ════ */}
+          <div style={{ minWidth:0, width:"100%", display:"flex", flexDirection:"column", gap:20 }}>
+
+            {/* Opinion Today */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Opinion Today</div></div>
+              <div className="widget-body">
+                <LC s={S.opinion[0]} os={setStory} />
+                <LC s={S.opinion[1]} os={setStory} />
+                <LC s={S.opinion[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* World News */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">World News</div></div>
+              <div className="widget-body">
+                <LC s={S.world[0]} os={setStory} />
+                <LC s={S.world[1]} os={setStory} />
+                <LC s={S.world[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Ad */}
+            <Ad h={250} icon="🎓" msg="Study Abroad 2026 — Scholarships for Nigerian Students" cta="Apply Now" ctaColor="#1D4ED8" />
+
+            {/* Health */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#0891B2" }} /><div className="widget-title">Health</div></div>
+              <div className="widget-body">
+                <LC s={S.health[0]} os={setStory} />
+                <LC s={S.health[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Tech */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#1D4ED8" }} /><div className="widget-title">Tech & Innovation</div></div>
+              <div className="widget-body">
+                <LC s={S.tech[0]} os={setStory} />
+                <LC s={S.tech[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Africa */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#D97706" }} /><div className="widget-title">Africa</div></div>
+              <div className="widget-body">
+                <LC s={S.africa[0]} os={setStory} />
+                <LC s={S.africa[1]} os={setStory} />
+                <LC s={S.africa[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Entertainment */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#7C3AED" }} /><div className="widget-title">Entertainment</div></div>
+              <div className="widget-body">
+                <LC s={S.entertainment[0]} os={setStory} />
+                <LC s={S.entertainment[1]} os={setStory} />
+                <LC s={S.entertainment[2]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Money */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"#007A3D" }} /><div className="widget-title">Money / Hustle</div></div>
+              <div className="widget-body">
+                <LC s={S.money[0]} os={setStory} />
+                <LC s={S.money[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* Investigation */}
+            <div className="widget">
+              <div className="widget-hdr"><div className="widget-bar" style={{ background:"var(--red)" }} /><div className="widget-title">Investigations</div></div>
+              <div className="widget-body">
+                <LC s={S.investigation[0]} os={setStory} />
+                <LC s={S.investigation[1]} os={setStory} />
+              </div>
+            </div>
+
+            {/* NRT Stats */}
+            <div style={{ background:"linear-gradient(135deg,#0D1B2A,#162035)", borderRadius:10, padding:20 }}>
+              <div style={{ fontFamily:"'Inter',sans-serif", fontSize:13, fontWeight:800, color:"white", marginBottom:14, letterSpacing:"0.5px" }}>NRT By The Numbers</div>
+              {[
+                { label:"Stories Today",      value:"47" },
+                { label:"Active Feeds",        value:"10" },
+                { label:"AI Verify Rate",      value:"100%" },
+                { label:"Avg Publish Time",    value:"< 4 min" },
+                { label:"Daily Readers",       value:"240K+" },
+              ].map(stat => (
+                <div key={stat.label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+                  <span style={{ fontSize:11, color:"rgba(255,255,255,0.55)" }}>{stat.label}</span>
+                  <span style={{ fontSize:13, fontWeight:700, color:"var(--orange)", fontFamily:"'JetBrains Mono',monospace" }}>{stat.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Ad */}
+            <Ad h={200} icon="🚀" msg="Launch Your Startup in Nigeria — Free Legal Templates" cta="Get Started" ctaColor="var(--orange)" />
 
           </div>
 
